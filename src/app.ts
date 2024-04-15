@@ -1,14 +1,21 @@
-import express, { Express, Request, Response } from 'express'
+import express, { Express } from 'express'
 import dotenv from 'dotenv'
+import router from './routes'
+import path from 'path'
+import cors from 'cors'
 
 dotenv.config()
 
 const app: Express = express()
 const port = process.env.PORT || 3000
 
-app.get('/', (req: Request, res: Response) => {
-    res.send('Sensor Monitoring System')
-})
+app.use(cors())
+app.use(express.static(path.join(__dirname, 'public')))
+app.use(express.urlencoded({ extended: true }))
+app.use(express.json())
+
+app.use('/api', router)
+console.log('[server]: Router loaded');
 
 app.listen(port, () => {
     console.log(`[server]: Server is running on port ${port}`)
