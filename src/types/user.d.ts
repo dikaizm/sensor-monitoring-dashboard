@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { ApiResponse } from "./response"
+import { ApiResponse } from "../utils/response"
 
 interface UserService {
     createUser: (data: UserType) => Promise<ApiResponse>
@@ -8,12 +8,12 @@ interface UserService {
 }
 
 interface UserController {
-    createUser: (req: Request, res: Response) => void
     updateUser: (req: Request, res: Response) => void
     deleteUser: (req: Request, res: Response) => void
 }
 
 interface UserType {
+    id?: number
     name: string
     email: string
     password: string

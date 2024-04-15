@@ -1,23 +1,11 @@
 import { Request, Response } from "express";
 import userService from "../services/userService";
 import { UserController, UserType } from "../types/user";
-import { ApiResponse } from "../types/response";
-
+import { ApiResponse } from "../utils/response";
 
 const userController: UserController = {
-    createUser,
     updateUser,
     deleteUser
-}
-
-// create user
-async function createUser(req: Request, res: Response) {
-    const data: UserType = req.body
-
-    console.log(data);
-
-    const result: ApiResponse = await userService.createUser(data)
-    return result.send(res)
 }
 
 // update user
