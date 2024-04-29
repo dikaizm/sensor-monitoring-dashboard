@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import userService from "../services/userService";
-import { UserController, UserType } from "../types/user";
+import { UpdateUserType, UserController, UserType } from "../types/user";
 import { ApiResponse } from "../utils/response";
 
 const userController: UserController = {
@@ -9,8 +9,12 @@ const userController: UserController = {
 }
 
 // update user
-function updateUser(req: Request, res: Response) {
-    res.send('Update user')
+async function updateUser(req: Request, res: Response) {
+    const data: UpdateUserType = req.body
+
+    const result: ApiResponse = await userService.updateUser(data)
+
+    return result.send(res)
 }
 
 // delete user

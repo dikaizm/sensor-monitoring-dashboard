@@ -1,6 +1,6 @@
 'use strict';
 
-import { Sequelize } from 'sequelize';
+import { Model, Sequelize } from 'sequelize';
 import { mysqlConfig } from '../config/database';
 
 import UserModel from './UserModel';

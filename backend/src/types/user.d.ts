@@ -1,9 +1,10 @@
 import { Request, Response } from "express"
 import { ApiResponse } from "../utils/response"
+import { UserVerified } from "./auth"
 
 interface UserService {
     createUser: (data: UserType) => Promise<ApiResponse>
-    updateUser: () => void
+    updateUser: (data: UpdateUserType) => Promise<ApiResponse>
     deleteUser: () => void
 }
 
@@ -18,4 +19,11 @@ interface UserType {
     email: string
     password: string
     role_id: number
+}
+
+interface UpdateUserType {
+    email?: string
+    name?: string
+    password?: string
+    user: UserVerified
 }

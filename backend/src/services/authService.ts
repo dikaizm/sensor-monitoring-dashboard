@@ -1,15 +1,17 @@
-import { where } from "sequelize";
+import { sign } from "jsonwebtoken";
 import db from "../models";
-import { AuthService, LoginType } from "../types/auth";
+import { AuthService, LoginType, UserVerified } from "../types/auth";
 import { UserType } from "../types/user";
 import response from "../utils/response";
 import userService from "./userService";
 import bcrypt from 'bcrypt'
+import authConfig from "../config/auth";
 
 const authService: AuthService = {
     login,
     logout,
-    register
+    register,
+    refreshToken
 }
 
 async function login(data: LoginType) {
@@ -22,7 +24,15 @@ async function login(data: LoginType) {
         const isValidPassword = await bcrypt.compare(password, user.password)
         if (!isValidPassword) return response.error('Invalid password', null, 401)
 
-        return response.success('Login successful')
+        const token = sign({
+            id: user.id,
+            email: user.email,
+            name: user.name
+        }, authConfig.secret, {
+            expiresIn: '24h'
+        })
+
+        return response.success('Login successful', { token }, 201)
     } catch (error: any) {
         console.log(error);
         return response.error(error.message)
@@ -44,6 +54,30 @@ async function register(data: UserType) {
         const result = await userService.createUser(data)
 
         return result
+    } catch (error: any) {
+        console.error(error)
+        return response.error(error.message, null, 500)
+    }
+}
+
+function refreshToken(user: UserVerified) {
+    try {
+        const expireTimeMs = user.exp * 1000
+        const remainingTime = expireTimeMs - Date.now()
+
+        if (remainingTime > 0) {
+            const newToken = sign({
+                id: user.id,
+                email: user.email,
+                name: user.name
+            }, authConfig.secret, {
+                expiresIn: '24h'
+            })
+
+            return response.success('Token refreshed', { token: newToken })
+        } else {
+            return response.error('Token expired', null, 401)
+        }
     } catch (error: any) {
         console.error(error)
         return response.error(error.message, null, 500)

@@ -3,7 +3,7 @@ import { AuthController, LoginType } from "../types/auth"
 import authService from "../services/authService"
 import { ApiResponse } from "../utils/response"
 import { UserType } from "../types/user"
-
+import { sign } from "jsonwebtoken"
 
 const authController: AuthController = {
     login,
@@ -15,6 +15,10 @@ async function login(req: Request, res: Response) {
     const data: LoginType = req.body
 
     const result: ApiResponse = await authService.login(data)
+
+    if (result.isSuccess) {
+        res.cookie('auth', result.data.token, { maxAge: 24 * 3600 * 1000 })
+    }
 
     return result.send(res)
 }
