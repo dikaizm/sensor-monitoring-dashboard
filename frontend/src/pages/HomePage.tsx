@@ -1,5 +1,8 @@
 export default function HomePage() {
   return (
-    <div>HomePage</div>
+    <main>
+      <div>HomePage</div>
+      <a href="/login">Login</a>
+    </main>
   )
 }

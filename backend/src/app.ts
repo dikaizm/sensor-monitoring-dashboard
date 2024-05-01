@@ -3,6 +3,7 @@ import dotenv from 'dotenv'
 import router from './routes/rest'
 import path from 'path'
 import cors from 'cors'
+import cookieParser from 'cookie-parser'
 import startMqttSubscriber from './utils/subscriber'
 
 dotenv.config()
@@ -12,7 +13,16 @@ const port = process.env.PORT || 3000
 
 startMqttSubscriber()
 
-app.use(cors())
+const corsOption = {
+    origin: '*',
+    credentials: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+}
+
+app.use(cookieParser())
+app.use(cors(corsOption))
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())

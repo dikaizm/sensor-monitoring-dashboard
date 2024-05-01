@@ -1,44 +1,91 @@
-import { ChangeEvent, useState } from "react"
+import { ChangeEvent, FormEvent, useState } from "react"
+import { MdEmail, MdLock } from "react-icons/md"
+import InputText from "../components/InputText"
+import appConfig from "../config/env"
+import { useNavigate } from "react-router-dom"
 
 export default function LoginPage() {
-  const [username, setUsername] = useState<string>('')
+  const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
+  const [remember, setRemember] = useState<boolean>(false)
 
-  function handleUsername(event: ChangeEvent<HTMLInputElement>) {
-    setUsername(event.target.value)
+  const navigate = useNavigate()
+
+  function handleEmail(event: ChangeEvent<HTMLInputElement>) {
+    setEmail(event.target.value)
   }
 
   function handlePassword(event: ChangeEvent<HTMLInputElement>) {
     setPassword(event.target.value)
   }
 
+  function handleRemember(event: ChangeEvent<HTMLInputElement>) {
+    setRemember(event.target.checked)
+  }
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+
+    try {
+      const response = await fetch(`${appConfig.apiUrl}/api/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password })
+      }).then(res => {
+        if (res.ok) return res.json()
+
+        throw new Error('Login failed')
+      })
+
+      console.log(response)
+
+      return navigate('/dashboard')
+
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   return (
-    <main className="w-full mx-auto">
-      <div className="bg-white border border-gray-400 w-80">
-        <h1>Login</h1>
-        <form className="flex flex-col gap-4">
-          <InputText id="username" label="Username" value={username} onChange={handleUsername} />
-          <InputText id="password" label="Password" type="password" value={password} onChange={handlePassword} />
-          <button type="submit" className="text-white bg-blue-500">Login</button>
-        </form>
+    <main className="relative flex flex-col justify-between min-h-screen mx-auto bg-slate-50">
+      <div className="relative flex justify-between gap-4 px-8 py-4">
+        <a href="/" className="flex">
+          <div className="w-8 h-8 bg-blue-500 rounded-full"></div>
+          <div className="w-8 h-8 bg-green-500 rounded-full"></div>
+          <div className="w-8 h-8 bg-yellow-500 rounded-full"></div>
+        </a>
+
+        <div className="flex items-center gap-3">
+          <span>Belum memiliki akun?</span>
+          <a className="px-3 py-2 text-blue-500 border border-blue-500 rounded-lg" href="/register">Daftar Akun</a>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-center h-full ">
+        <div className="relative p-12 rounded-xl w-[32rem] h-fit bg-white border border-slate-100">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold">Masuk ke Akun Anda</h1>
+            <p>Selamat datang kembali!</p>
+          </div>
+
+          <form className="flex flex-col gap-4 mt-6" onSubmit={handleSubmit}>
+            <InputText id="email" label="Email" placeholder="Masukkan email" value={email} onChange={handleEmail} icon={<MdEmail className="w-full h-full" />} />
+            <InputText id="password" label="Password" placeholder="Masukkan password" type="password" value={password} onChange={handlePassword} icon={<MdLock className="w-full h-full" />} />
+            <div>
+              <input type="checkbox" id="remember" onChange={handleRemember} checked={remember} />
+              <label className="ml-2" htmlFor="remember">Ingat saya</label>
+            </div>
+            <button type="submit" className="p-2 text-white bg-blue-500 rounded-lg">Login</button>
+          </form>
+
+        </div>
+      </div>
+
+      <div className="w-full py-8 text-center">
+        <p className="text-sm text-slate-500">Copyright 2024</p>
       </div>
     </main>
-  )
-}
-
-interface InputTextType {
-  id: string
-  label: string
-  type?: string
-  value: string
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
-}
-
-function InputText({ id, label, type = 'text', value, onChange }: InputTextType) {
-  return (
-    <div className="flex flex-col items-start gap-2">
-      <label htmlFor={id}>{label}</label>
-      <input type={type} id={id} onChange={onChange} value={value} />
-    </div>
   )
 }

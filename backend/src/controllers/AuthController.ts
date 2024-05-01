@@ -16,7 +16,7 @@ async function login(req: Request, res: Response) {
     const result: ApiResponse = await authService.login(data)
 
     if (result.isSuccess) {
-        res.cookie('auth', result.data.token, { maxAge: 24 * 3600 * 1000 })
+        res.cookie('auth', result.data.token, { maxAge: 24 * 3600 * 1000, httpOnly: true })
     }
 
     return result.send(res)

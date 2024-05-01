@@ -29,7 +29,7 @@ async function login(data: LoginType) {
             email: user.email,
             name: user.name
         }, authConfig.secret, {
-            expiresIn: '24h'
+            expiresIn: '8h'
         })
 
         return response.success('Login successful', { token }, 201)
@@ -71,7 +71,7 @@ function refreshToken(user: UserVerified) {
                 email: user.email,
                 name: user.name
             }, authConfig.secret, {
-                expiresIn: '24h'
+                expiresIn: '8h'
             })
 
             return response.success('Token refreshed', { token: newToken })
