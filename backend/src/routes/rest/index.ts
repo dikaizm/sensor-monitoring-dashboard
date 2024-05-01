@@ -1,7 +1,7 @@
 import { Request, Response, Router } from 'express'
 import userRoutes from './userRoute'
 import authRoutes from './authRoute'
-import authMiddleware from '../middleware/authentication'
+import authMiddleware from '../../middleware/authentication'
 
 const router = Router()
 

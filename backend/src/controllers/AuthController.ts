@@ -3,7 +3,6 @@ import { AuthController, LoginType } from "../types/auth"
 import authService from "../services/authService"
 import { ApiResponse } from "../utils/response"
 import { UserType } from "../types/user"
-import { sign } from "jsonwebtoken"
 
 const authController: AuthController = {
     login,
