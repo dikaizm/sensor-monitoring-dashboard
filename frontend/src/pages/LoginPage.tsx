@@ -1,8 +1,9 @@
 import { ChangeEvent, FormEvent, useState } from "react"
 import { MdEmail, MdLock } from "react-icons/md"
 import InputText from "../components/InputText"
-import appConfig from "../config/env"
+// import appConfig from "../config/env"
 import { useNavigate } from "react-router-dom"
+import AppLogo from "../components/AppLogo"
 
 export default function LoginPage() {
   const [email, setEmail] = useState<string>('')
@@ -26,35 +27,35 @@ export default function LoginPage() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
-    try {
-      const response = await fetch(`${appConfig.apiUrl}/api/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email, password })
-      }).then(res => {
-        if (res.ok) return res.json()
+    return navigate('/dashboard/line')
 
-        throw new Error('Login failed')
-      })
+    // try {
+    //   const response = await fetch(`${appConfig.apiUrl}/api/auth/login`, {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json'
+    //     },
+    //     body: JSON.stringify({ email, password })
+    //   }).then(res => {
+    //     if (res.ok) return res.json()
 
-      console.log(response)
+    //     throw new Error('Login failed')
+    //   })
 
-      return navigate('/dashboard')
+    //   console.log(response)
 
-    } catch (error) {
-      console.error(error)
-    }
+    //   return navigate('/dashboard')
+
+    // } catch (error) {
+    //   console.error(error)
+    // }
   }
 
   return (
     <main className="relative flex flex-col justify-between min-h-screen mx-auto bg-slate-50">
       <div className="relative flex justify-between gap-4 px-8 py-4">
-        <a href="/" className="flex">
-          <div className="w-8 h-8 bg-blue-500 rounded-full"></div>
-          <div className="w-8 h-8 bg-green-500 rounded-full"></div>
-          <div className="w-8 h-8 bg-yellow-500 rounded-full"></div>
+        <a href="/">
+          <AppLogo />
         </a>
 
         <div className="flex items-center gap-3">

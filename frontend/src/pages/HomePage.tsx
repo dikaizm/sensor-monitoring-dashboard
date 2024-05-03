@@ -1,8 +1,16 @@
+import Sidebar from "../components/Sidebar"
+import Topbar from "../components/Topbar"
+
 export default function HomePage() {
   return (
-    <main>
-      <div>HomePage</div>
-      <a href="/login">Login</a>
-    </main>
+    <>
+      <Topbar />
+      <Sidebar />
+
+      <main>
+        <div>HomePage</div>
+        <a href="/login">Login</a>
+      </main>
+    </>
   )
 }

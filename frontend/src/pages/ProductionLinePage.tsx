@@ -1,6 +1,8 @@
-export default function DashboardPage() {
+import AuthenticatedLayout from "../components/AuthenticatedLayout";
+
+export default function ProductionLinePage() {
   return (
-    <main className="min-h-[calc(100vh-64px)] pt-40 sm:ml-20 overflow-x-auto">
+    <AuthenticatedLayout className="overflow-x-auto">
       <div className="relative grid px-4 place-items-center">
 
         <div className="relative grid">
@@ -63,7 +65,7 @@ export default function DashboardPage() {
                     <div className="absolute top-0 right-0 grid items-center justify-center px-1 py-1 text-white bg-yellow-400 border-2 border-yellow-500 w-fit text-3xs">Kualitas 2</div>
                     <div className="absolute top-0 right-0 grid items-center justify-center px-1 py-1 mt-8 text-white bg-red-400 border-2 border-red-500 w-fit text-3xs">Kualitas 3</div>
 
-                    <button type="button" id="inspeksi-btn" data-template="inspeksi-card" className="absolute bottom-0 left-0 grid items-center justify-center w-24 h-10 text-white transition-all bg-red-500 bg-green-500 border-2 border-red-600 hover:bg-red-600">Area Inspeksi & Pengecatan</button>
+                    <button type="button" id="inspeksi-btn" data-template="inspeksi-card" className="absolute bottom-0 left-0 grid items-center justify-center w-24 h-10 text-white transition-all bg-red-500 border-2 border-red-600 hover:bg-red-600">Area Inspeksi & Pengecatan</button>
                   </div>
 
                   <button type="button" id="pembakaran-btn" data-template="pembakaran-card" className="relative grid items-center justify-center w-full h-full row-span-4 text-white transition-all bg-red-500 border-2 border-red-600 hover:bg-red-600">
@@ -172,6 +174,6 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
-    </main>
+    </AuthenticatedLayout>
   )
 }
