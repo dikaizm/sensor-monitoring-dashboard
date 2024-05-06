@@ -24,6 +24,11 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
+.map-line {
+  border: 3px solid rgb(185, 189, 194);
+  border-radius: 4pt;
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;

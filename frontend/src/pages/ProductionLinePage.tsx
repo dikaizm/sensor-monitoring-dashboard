@@ -7,42 +7,41 @@ export default function ProductionLinePage() {
 
         <div className="relative grid">
           {/* <!-- Group 1 --> */}
-          <div className="flex items-end">
-            <div className="flex w-40 h-40 text-center border-l-2 map-flex border-y-2"></div>
+          <div className="flex items-end gap-1">
+            <div className="flex w-40 h-40 text-center border-l-2 map-line border-y-2"></div>
 
-            <div className="relative flex items-center justify-center flex-none h-[17rem] font-bold text-center text-gray-600 border-2 w-36">
+            <div className="relative flex items-center justify-center flex-none w-40 font-bold text-center text-gray-600 border-2 map-line h-80">
               <div className="relative z-10 grid items-center justify-center w-full h-full text-2xs">
                 <div className="absolute bottom-0 left-0 right-0 px-4 mb-16"></div>
               </div>
             </div>
 
             {/* <!-- Row 1 --> */}
-            <div className="flex flex-col gap-y-4">
-              <div className="flex">
-                <div className="h-24 border-r-2 map-flex border-y-2 w-44"></div>
-                <div className="w-24 h-20 map-flex border-y-2"></div>
-                <div className="h-24 border-x-2 map-flex border-y-2 w-44"></div>
-                <div className="w-24 h-20 map-flex border-y-2"></div>
-                <div className="h-24 border-2 w-44 map-flex"></div>
+            <div className="flex flex-col gap-y-16">
+              <div className="flex gap-x-1">
+                <div className="h-24 border-r-2 map-line border-y-2 w-36"></div>
+                <div className="w-24 h-20 map-line border-y-2"></div>
+                <div className="h-24 border-x-2 map-line border-y-2 w-36"></div>
+                <div className="w-24 h-20 map-line border-y-2"></div>
+                <div className="h-24 border-2 w-36 map-line"></div>
               </div>
 
               {/* <!-- Row 2 --> */}
-              <div className="flex">
-                <div className="relative h-40 text-center border-r-2 w-44 map-flex border-y-2"></div>
-                <div className="relative grid items-center justify-center h-40 font-bold text-center text-gray-600 text-2xs">
+              <div className="flex gap-x-1">
+                <div className="relative h-40 text-center border-r-2 w-36 map-line border-y-2"></div>
 
-                  <div className="relative h-full row-span-4 bg-gray-200 border-t-2 border-b-2 border-gray-500 w-[17rem] border-x-2">
-                    <div className="absolute top-0 left-0 grid items-center justify-center px-1 py-1 text-white bg-green-400 border-2 border-green-500 w-fit text-3xs">Kualitas 1</div>
-                    <div className="absolute top-0 right-0 grid items-center justify-center px-1 py-1 text-white bg-yellow-400 border-2 border-yellow-500 w-fit text-3xs">Kualitas 2</div>
-                    <div className="absolute top-0 right-0 grid items-center justify-center px-1 py-1 mt-8 text-white bg-red-400 border-2 border-red-500 w-fit text-3xs">Kualitas 3</div>
+                <div className="relative flex items-end justify-center h-40 p-2 font-bold text-center text-gray-600 w-[22rem] map-line">
 
-                    <button type="button" id="inspeksi-btn" data-template="inspeksi-card" className="absolute bottom-0 left-0 grid items-center justify-center w-24 h-10 text-white transition-all bg-red-500 border-2 border-red-600 hover:bg-red-600">Area Inspeksi & Pengecatan</button>
+                  <div className="relative flex items-center mb-4">
+                    <div className="w-16 h-16 map-line"></div>
+
+                    <button className="relative w-56 h-8 border-[3px] hover:bg-purple-300 border-purple-400 border-l-0 rounded-r-lg"></button>
+
+                    <button className="absolute w-8 h-24 top-1/2 -translate-y-1/2 left-32 bg-slate-50 border-[3px] border-blue-400 hover:bg-blue-300 rounded-lg"></button>
+
+                    <button className="absolute w-8 h-8 -top-4 right-6 border-[3px] hover:bg-orange-300 border-orange-400 rounded-lg"></button>
+
                   </div>
-
-                  <button type="button" id="pembakaran-btn" data-template="pembakaran-card" className="relative grid items-center justify-center w-full h-full row-span-4 text-white transition-all bg-red-500 border-2 border-red-600 hover:bg-red-600">
-                    Proses Pembakaran
-                  </button>
-
                 </div>
               </div>
             </div>
