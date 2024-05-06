@@ -1,4 +1,4 @@
-import { MouseEvent } from 'react'
+import { MouseEvent, useEffect, useRef } from 'react'
 import { MdMenu } from 'react-icons/md'
 import AppLogo from './AppLogo'
 import { BsPersonCircle } from 'react-icons/bs'
@@ -12,6 +12,8 @@ export default function Topbar() {
   const [isProfilOpen, setIsProfilOpen] = useState<boolean>(false)
   const { isSidebarOpen, toggleSidebar } = useToggleSidebar()
 
+  const profileRef = useRef<HTMLDivElement>(null)
+
   function handleProfileClick(event: MouseEvent<HTMLButtonElement>) {
     event.preventDefault()
     setIsProfilOpen(!isProfilOpen)
@@ -21,6 +23,21 @@ export default function Topbar() {
     event.preventDefault()
     toggleSidebar(!isSidebarOpen)
   }
+
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    function handleClickOutside(event: any) {
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setIsProfilOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isProfilOpen]);
 
   return (
     <header className='fixed z-50 flex items-center justify-between w-full h-16 gap-4 pl-4 pr-6 bg-white border-b'>
@@ -32,7 +49,7 @@ export default function Topbar() {
         <AppLogo />
       </section>
 
-      <section className='relative'>
+      <section ref={profileRef} className='relative'>
         <button type="button" onClick={handleProfileClick} className={'flex items-center gap-2 p-2 border rounded-full  hover:bg-slate-200 ' + (isProfilOpen ? 'bg-slate-200' : 'border-slate-300')}>
           <span className='text-sm font-semibold'>John Doe</span>
           <BsPersonCircle className='w-6 h-6' />
