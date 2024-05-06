@@ -84,50 +84,8 @@ type ProductionResultType = {
 const productionResults: ProductionResultType[] = [
   {
     id: 1,
-    name: "Basis Atas",
+    name: "Genteng",
     quantity: 14,
     date: "14/10/2023"
   },
-  {
-    id: 2,
-    name: "Basis Bawah",
-    quantity: 10,
-    date: "14/10/2023"
-  },
-  {
-    id: 3,
-    name: "Handle",
-    quantity: 20,
-    date: "14/10/2023"
-  },
-  {
-    id: 4,
-    name: "Pisau",
-    quantity: 15,
-    date: "14/10/2023"
-  },
-  {
-    id: 5,
-    name: "Lower",
-    quantity: 12,
-    date: "14/10/2023"
-  },
-  {
-    id: 6,
-    name: "Lock Grip",
-    quantity: 8,
-    date: "14/10/2023"
-  },
-  {
-    id: 7,
-    name: "Jam Kompas",
-    quantity: 8,
-    date: "14/10/2023"
-  },
-  {
-    id: 8,
-    name: "Strap",
-    quantity: 8,
-    date: "14/10/2023"
-  }
 ]

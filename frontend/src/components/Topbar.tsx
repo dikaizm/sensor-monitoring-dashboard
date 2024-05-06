@@ -6,19 +6,26 @@ import { TbLogout2 } from 'react-icons/tb'
 import { useState } from 'react'
 import { FaPerson } from 'react-icons/fa6'
 import { useNavigate } from 'react-router-dom'
+import { useToggleSidebar } from '../context/utils/sidebarContext'
 
 export default function Topbar() {
   const [isProfilOpen, setIsProfilOpen] = useState<boolean>(false)
+  const { isSidebarOpen, toggleSidebar } = useToggleSidebar()
 
   function handleProfileClick(event: MouseEvent<HTMLButtonElement>) {
     event.preventDefault()
     setIsProfilOpen(!isProfilOpen)
   }
 
+  function handleMenuClick(event: MouseEvent<HTMLButtonElement>) {
+    event.preventDefault()
+    toggleSidebar(!isSidebarOpen)
+  }
+
   return (
     <header className='fixed z-50 flex items-center justify-between w-full h-16 gap-4 pl-4 pr-6 bg-white border-b'>
       <section className='flex items-center gap-4'>
-        <button type="button" className='w-10 h-10 p-2 rounded-full hover:bg-slate-200'>
+        <button onClick={handleMenuClick} type="button" className='w-10 h-10 p-2 rounded-full hover:bg-slate-200'>
           <MdMenu className='w-full h-full' />
         </button>
 
@@ -42,6 +49,7 @@ function ProfileDropdown({ isOpen }: { isOpen: boolean }) {
 
   function handleLogout(event: MouseEvent<HTMLButtonElement>) {
     event.preventDefault()
+    localStorage.removeItem('sidebar')
     navigate('/login')
   }
 

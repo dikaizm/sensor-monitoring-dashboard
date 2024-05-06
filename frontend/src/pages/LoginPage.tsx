@@ -27,7 +27,9 @@ export default function LoginPage() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
-    return navigate('/dashboard/line')
+    localStorage.setItem('sidebar', 'true')
+
+    return navigate('/')
 
     // try {
     //   const response = await fetch(`${appConfig.apiUrl}/api/auth/login`, {
