@@ -9,7 +9,7 @@ export default function Sidebar() {
   const { isSidebarOpen } = useToggleSidebar()
 
   return (
-    <aside className={'fixed z-40 flex flex-col justify-between  min-h-screen p-3 transition-transform duration-300 pt-20 bg-white border-r ' + (isSidebarOpen ? 'w-[14rem]' : 'w-[4.5rem]')}>
+    <aside className={'fixed z-40 flex flex-col justify-between  min-h-screen p-3 transition-transform duration-200 pt-20 bg-white border-r ' + (isSidebarOpen ? 'w-[14rem]' : 'w-[4.5rem]')}>
       <section>
         <MenuItem link="/" icon={<GoHomeFill className='w-6 h-6' />}>Beranda</MenuItem>
         <MenuItem link="/dashboard/line" icon={<BiSolidFactory className='w-6 h-6' />}>Lantai Produksi</MenuItem>

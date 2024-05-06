@@ -47,7 +47,7 @@ function HomeBanner() {
         <TbHeartRateMonitor className="w-10 h-10" />
         <h1 className="text-2xl font-semibold">Dashboard Monitoring Produksi</h1>
       </div>
-      <p className="mt-6">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae voluptate odit autem magnam, voluptates neque ratione inventore molestias nulla fugit officiis praesentium necessitatibus aut recusandae reprehenderit cum aliquam itaque ducimus!</p>
+      <p className="mt-6">PT XYZ adalah pabrik genteng berpusat di jatiwangi kabupaten majelengka Jawa Barat & sudah menjadi pabrik genteng yg dipercaya di kawasan Jawa Barat. Genteng dibuat dari tanah liat coklat dengan kualitas tanah yg sangat baik untuk pembuatan genteng.</p>
     </div>
   )
 }

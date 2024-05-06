@@ -10,6 +10,10 @@ export default function LoginPage() {
   const [password, setPassword] = useState<string>('')
   const [remember, setRemember] = useState<boolean>(false)
 
+  // error state
+  const [emailError, setEmailError] = useState<string>('')
+  const [passwordError, setPasswordError] = useState<string>('')
+
   const navigate = useNavigate()
 
   function handleEmail(event: ChangeEvent<HTMLInputElement>) {
@@ -26,6 +30,10 @@ export default function LoginPage() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+
+    if (!email) setEmailError('Email tidak boleh kosong')
+    if (!password) setPasswordError('Password tidak boleh kosong')
+    if (!email || !password) return
 
     localStorage.setItem('sidebar', 'true')
 
@@ -74,8 +82,12 @@ export default function LoginPage() {
           </div>
 
           <form className="flex flex-col gap-4 mt-6" onSubmit={handleSubmit}>
-            <InputText id="email" label="Email" placeholder="Masukkan email" value={email} onChange={handleEmail} icon={<MdEmail className="w-full h-full" />} />
-            <InputText id="password" label="Password" placeholder="Masukkan password" type="password" value={password} onChange={handlePassword} icon={<MdLock className="w-full h-full" />} />
+            <InputText id="email" label="Email" placeholder="Masukkan email" value={email} onChange={handleEmail} icon={<MdEmail className="w-full h-full" />}
+              error={{ value: emailError, setValue: setEmailError }}
+            />
+            <InputText id="password" label="Password" placeholder="Masukkan password" type="password" value={password} onChange={handlePassword} icon={<MdLock className="w-full h-full" />}
+              error={{ value: passwordError, setValue: setPasswordError }}
+            />
             <div>
               <input type="checkbox" id="remember" onChange={handleRemember} checked={remember} />
               <label className="ml-2" htmlFor="remember">Ingat saya</label>
