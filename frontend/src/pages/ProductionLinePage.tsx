@@ -109,7 +109,7 @@ export default function ProductionLinePage() {
                       onMouseLeave={() => {
                         mouseHoverDispatch({ type: "OUT_photoelectric" })
                       }}
-                      className={"absolute w-8 h-24 top-1/2 -translate-y-1/2 left-32 bg-slate-50 border-[3px] border-blue-400 hover:bg-blue-300 rounded-lg z-0 " + (tooltipState.photoelectric ? 'bg-blue-400' : '')}>
+                      className={"absolute w-8 h-24 top-1/2 -translate-y-1/2 left-32 border-[3px] border-blue-400 hover:bg-blue-300 rounded-lg z-0 " + (tooltipState.photoelectric ? 'bg-blue-300' : 'bg-slate-50')}>
                       {(tooltipState.photoelectric) &&
                         (<TooltipWindow color="blue" label="Photoelectric Sensor">
                           <div className="grid grid-cols-2 gap-2 p-3 text-sm font-medium">
