@@ -13,12 +13,13 @@ export default function ModalWindow() {
           tooltipDispatch({ type: "CLICK_conveyor" })
         }} color="purple">Conveyor</SensorItem>
         <SensorItem onClick={() => {
-          tooltipDispatch({ type: "CLICK_photoelectric" })
-        }} color="blue">Photoelectric Sensor</SensorItem>
-        <SensorItem onClick={() => {
           tooltipDispatch({ type: "CLICK_camera" })
-        }} color="orange">Camera Inspection</SensorItem>
+        }} color="blue">Camera Inspection</SensorItem>
+        <SensorItem onClick={() => {
+          tooltipDispatch({ type: "CLICK_photoelectric" })
+        }} color="orange">Photoelectric Sensor</SensorItem>
       </div>
+      
     </div>
   )
 }

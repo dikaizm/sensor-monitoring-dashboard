@@ -101,35 +101,6 @@ export default function ProductionLinePage() {
 
                     <div
                       onClick={() => {
-                        tooltipDispatch({ type: "CLICK_photoelectric" })
-                      }}
-                      onMouseEnter={() => {
-                        mouseHoverDispatch({ type: "IN_photoelectric" })
-                      }}
-                      onMouseLeave={() => {
-                        mouseHoverDispatch({ type: "OUT_photoelectric" })
-                      }}
-                      className={"absolute w-8 h-24 top-1/2 -translate-y-1/2 left-32 border-[3px] border-blue-400 hover:bg-blue-300 rounded-lg z-0 " + (tooltipState.photoelectric ? 'bg-blue-300' : 'bg-slate-50')}>
-                      {(tooltipState.photoelectric) &&
-                        (<TooltipWindow color="blue" label="Photoelectric Sensor">
-                          <div className="grid grid-cols-2 gap-2 p-3 text-sm font-medium">
-                            <div className="flex flex-col gap-2">
-                              <p>Jumlah Produksi</p>
-                            </div>
-
-                            <div className="flex flex-col gap-2">
-                              <p>14</p>
-                            </div>
-                          </div>
-                        </TooltipWindow>)}
-
-                      {(mouseHoverState.photoelectric && !tooltipState.photoelectric) && (
-                        <TooltipLabel>Photoelectric Sensor</TooltipLabel>
-                      )}
-                    </div>
-
-                    <div
-                      onClick={() => {
                         tooltipDispatch({ type: "CLICK_camera" })
                       }}
                       onMouseEnter={() => {
@@ -138,22 +109,52 @@ export default function ProductionLinePage() {
                       onMouseLeave={() => {
                         mouseHoverDispatch({ type: "OUT_camera" })
                       }}
-                      className={"absolute w-8 h-8 -top-4 right-6 border-[3px] hover:bg-orange-300 border-orange-400 rounded-lg z-0 " + (tooltipState.camera ? 'bg-orange-300' : '')}>
+                      className={"absolute w-8 h-24 top-1/2 -translate-y-1/2 left-32 border-[3px] border-blue-400 hover:bg-blue-300 rounded-lg z-0 " + (tooltipState.camera ? 'bg-blue-300' : 'bg-slate-50')}>
+                      {(tooltipState.camera) &&
+                        (<TooltipWindow color="blue" label="Camera Inspection">
+                          <div className="grid grid-cols-2 gap-2 p-3 text-sm font-medium">
+                            <div className="flex flex-col gap-2">
+                              <p>Periksa</p>
+                            </div>
 
-                      {(tooltipState.camera) && (<TooltipWindow color="orange" label="Camera Inspection">
+                            <div className="flex flex-col gap-2">
+                              <p>OK</p>
+                            </div>
+                          </div>
+                        </TooltipWindow>)}
+
+                      {(mouseHoverState.camera && !tooltipState.camera) && (
+                        <TooltipLabel>Camera Inspection</TooltipLabel>
+                      )}
+                    </div>
+
+                    <div
+                      onClick={() => {
+                        tooltipDispatch({ type: "CLICK_photoelectric" })
+                      }}
+                      onMouseEnter={() => {
+                        mouseHoverDispatch({ type: "IN_photoelectric" })
+                      }}
+                      onMouseLeave={() => {
+                        mouseHoverDispatch({ type: "OUT_photoelectric" })
+                      }}
+                      className={"absolute w-8 h-8 -top-4 right-6 border-[3px] hover:bg-orange-300 border-orange-400 rounded-lg z-0 " + (tooltipState.photoelectric ? 'bg-orange-300' : '')}>
+
+                      {(tooltipState.photoelectric) && (<TooltipWindow color="orange" label="Photoelectric Sensor">
                         <div className="grid grid-cols-2 p-3 text-sm font-medium">
+
                           <div className="flex flex-col gap-2">
-                            <p>Periksa</p>
+                            <p>Jumlah Produksi</p>
                           </div>
 
                           <div className="flex flex-col gap-2">
-                            <p>OK</p>
+                            <p>14</p>
                           </div>
                         </div>
                       </TooltipWindow>)}
 
-                      {(mouseHoverState.camera && !tooltipState.camera) && (
-                        <TooltipLabel>Camera Inspection</TooltipLabel>
+                      {(mouseHoverState.photoelectric && !tooltipState.photoelectric) && (
+                        <TooltipLabel>Photoelectric Sensor</TooltipLabel>
                       )}
                     </div>
 
