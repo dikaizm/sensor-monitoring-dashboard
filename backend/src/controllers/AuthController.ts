@@ -1,8 +1,8 @@
 import { Request, Response } from "express"
-import { AuthController, LoginType } from "../types/auth"
+import { AuthController, LoginType, RegisterType } from "../types/auth"
 import authService from "../services/authService"
 import { ApiResponse } from "../utils/response"
-import { UserRequest, UserType } from "../types/user"
+import authValidation from "../validations/auth"
 
 const authController: AuthController = {
     login,
@@ -12,6 +12,9 @@ const authController: AuthController = {
 
 async function login(req: Request, res: Response) {
     const data: LoginType = req.body
+
+    const error = authValidation.login(data)
+    if (error) return error.send(res)
 
     const result: ApiResponse = await authService.login(data)
 
@@ -27,7 +30,10 @@ function logout(req: Request, res: Response) {
 }
 
 async function register(req: Request, res: Response) {
-    const data: UserRequest = req.body
+    const data: RegisterType = req.body
+
+    const error = authValidation.register(data)
+    if (error) return error.send(res)
 
     const result: ApiResponse = await authService.register(data)
 

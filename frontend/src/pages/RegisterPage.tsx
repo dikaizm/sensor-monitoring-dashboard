@@ -1,16 +1,20 @@
-import { ChangeEvent, FormEvent, useEffect, useState } from "react"
+import { ChangeEvent, MouseEvent, useState } from "react"
 import { MdEmail, MdLock, MdPerson } from "react-icons/md"
 import InputText from "../components/InputText"
 import appConfig from "../config/env"
 import { useNavigate } from "react-router-dom"
 import AppLogo from "../components/AppLogo"
 import PrimaryButton from "../components/PrimaryButton"
+import ModalAlert from "../components/ModalAlert"
 
 export default function RegisterPage() {
   const [name, setName] = useState<string>('')
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [confirmPassword, setConfirmPassword] = useState<string>('')
+  const [role, setRole] = useState<string>('')
+
+  const [modalState, setModalState] = useState<boolean>(false)
 
   // error state
   const [nameError, setNameError] = useState<string>('')
@@ -37,45 +41,66 @@ export default function RegisterPage() {
     setConfirmPassword(event.target.value)
   }
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  function handleRole(event: ChangeEvent<HTMLSelectElement>) {
+    setRole(event.target.value)
+  }
+
+  async function handleSubmit(event: MouseEvent<HTMLButtonElement>) {
     event.preventDefault()
 
     if (!name) setNameError('Nama tidak boleh kosong')
     if (!email) setEmailError('Email tidak boleh kosong')
     if (password.length < 6) setPasswordError('Password minimal 6 karakter')
     if (password !== confirmPassword) setConfirmPasswordError('Password tidak sama')
-    if (!name || !email || password.length < 6 || password !== confirmPassword) return
+    if (!role) setRegisterError('Role tidak boleh kosong')
+    if (!name || !email || password.length < 6 || password !== confirmPassword || !role) return
 
     try {
+      const newUser = {
+        name,
+        email,
+        password,
+        confirmPassword,
+        roleRequest: role
+      }
+
       const response = await fetch(`${appConfig.apiUrl}/api/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ email, password })
-      }).then(res => {
-        if (res.ok) return res.json()
-
-        throw new Error('Login failed')
+        body: JSON.stringify(newUser)
       })
+      const data = await response.json()
+      if (!response.ok) {
+        throw new Error(data.message)
+      }
 
-      console.log(response)
-
-      return navigate('/')
+      setModalState(true)
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error(error)
-      setRegisterError(error)
+
+      setRegisterError(error.message)
     }
   }
 
-  useEffect(() => {
-
-  }, [password, confirmPassword])
-
   return (
     <main className="relative flex flex-col justify-between min-h-screen mx-auto bg-slate-50">
+
+      {modalState && (
+        <ModalAlert title="Akun berhasil didaftarkan" onClose={() => {
+          setModalState(false)
+          navigate('/login')
+        }}>
+          <div className="flex flex-col gap-3">
+            <p className="text-sm">Akun Anda berhasil didaftarkan, silahkan masuk untuk mengakses dashboard.</p>
+            <PrimaryButton onClick={() => navigate('/login')}>Masuk</PrimaryButton>
+          </div>
+        </ModalAlert>
+      )}
+
       <div className="relative flex justify-between gap-4 px-8 py-4">
         <a href="/">
           <AppLogo />
@@ -94,33 +119,38 @@ export default function RegisterPage() {
             <p>Masukkan data akun Anda</p>
           </div>
 
-          <form className="flex flex-col gap-4 mt-6" onSubmit={handleSubmit}>
+          <form className="flex flex-col gap-4 mt-6">
             <InputText id="name" label="Nama Lengkap" placeholder="Masukkan nama lengkap" value={name} onChange={handleName} icon={<MdPerson className="w-full h-full" />}
               error={{ value: nameError, setValue: setNameError }}
             />
-            <InputText id="email" label="Email" placeholder="Masukkan email" value={email} onChange={handleEmail} icon={<MdEmail className="w-full h-full" />}
+            <InputText id="email" type="email" label="Email" placeholder="Masukkan email" value={email} onChange={handleEmail} icon={<MdEmail className="w-full h-full" />}
               error={{ value: emailError, setValue: setEmailError }}
             />
             <InputText id="password" label="Password" placeholder="Masukkan password" type="password" value={password} onChange={handlePassword} icon={<MdLock className="w-full h-full" />}
               error={{ value: passwordError, setValue: setPasswordError }}
             />
-            <InputText id="password" label="Ulangi Password" placeholder="Masukkan password yang sama" type="password" value={confirmPassword} onChange={handleConfirmPassword} icon={<MdLock className="w-full h-full" />}
+            <InputText id="confirmPassword" label="Ulangi Password" placeholder="Masukkan password yang sama" type="password" value={confirmPassword} onChange={handleConfirmPassword} icon={<MdLock className="w-full h-full" />}
               error={{ value: confirmPasswordError, setValue: setConfirmPasswordError }}
             />
 
             {/* select option */}
             <div className="flex flex-col gap-2">
               <label htmlFor="Role">Request Role</label>
-              <select name="Role" id="Role" className="p-2 border rounded-lg">
-                <option value="1">Admin</option>
-                <option value="2">Operator</option>
-                <option value="3">Marketing</option>
+              <select name="Role" id="Role"
+                className="p-2 border rounded-lg border-slate-400"
+                value={role}
+                onChange={handleRole}
+              >
+                <option value="" defaultValue="">Pilih Role</option>
+                <option value="admin">Admin</option>
+                <option value="operator">Operator</option>
+                <option value="marketing">Marketing</option>
               </select>
             </div>
 
             <div className="w-full">
-              <PrimaryButton type="submit">Daftar</PrimaryButton>
-              {registerError && <p className="text-sm text-center text-red-500">{registerError}</p>}
+              <PrimaryButton type="submit" onClick={handleSubmit}>Daftar</PrimaryButton>
+              {registerError && (<p className="mt-2 text-sm text-red-500">{registerError}</p>)}
             </div>
           </form>
 

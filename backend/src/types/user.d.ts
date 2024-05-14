@@ -33,11 +33,3 @@ interface UpdateUserType {
     password?: string
     user: UserVerified
 }
-
-interface UserRequest {
-    name: string
-    email: string
-    password: string
-    confirmPassword: string
-    roleRequest: string
-}

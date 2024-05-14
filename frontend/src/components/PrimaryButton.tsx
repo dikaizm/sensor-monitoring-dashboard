@@ -1,11 +1,11 @@
-import { ReactNode } from "react"
+import { MouseEvent, ReactNode } from "react"
 
 interface ButtonType {
     children: string
     type?: "button" | "submit" | "reset" | undefined
     icon?: ReactNode
     style?: 'fill' | 'outline'
-    onClick?: () => void
+    onClick?: ((event: MouseEvent<HTMLButtonElement>) => void) | ((event: MouseEvent<HTMLButtonElement>) => Promise<void>)
 }
 
 export default function PrimaryButton({ children, type = 'button', icon, style = 'fill', onClick }: ButtonType) {

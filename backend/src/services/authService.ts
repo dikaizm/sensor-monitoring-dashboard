@@ -1,7 +1,7 @@
 import { sign } from "jsonwebtoken";
 import db from "../models";
-import { AuthService, LoginType, UserVerified } from "../types/auth";
-import { UserRequest, UserType } from "../types/user";
+import { AuthService, LoginType, RegisterType, UserVerified } from "../types/auth";
+import { UserType } from "../types/user";
 import response from "../utils/response";
 import userService from "./userService";
 import bcrypt from 'bcrypt'
@@ -46,16 +46,8 @@ function logout() {
 
 }
 
-async function register(data: UserRequest) {
+async function register(data: RegisterType) {
     try {
-        if (data.password.length < 6) {
-            return response.error('Password must be at least 6 characters', null, 400)
-        }
-
-        if (data.password !== data.confirmPassword) {
-            return response.error('Password not match', null, 400)
-        }
-
         const isUserExist = await db.User.findOne({ where: { email: data.email } })
         if (isUserExist) return response.error('User already exist', null, 400)
 
