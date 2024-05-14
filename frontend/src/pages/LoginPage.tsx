@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useState } from "react"
+import { ChangeEvent, FormEvent, useEffect, useState } from "react"
 import { MdEmail, MdLock } from "react-icons/md"
 import InputText from "../components/InputText"
 import appConfig from "../config/env"
@@ -9,6 +9,8 @@ import AppLogo from "../components/AppLogo"
 import PrimaryButton from "../components/PrimaryButton"
 
 export default function LoginPage() {
+  const [isAuth, setIsAuth] = useState<boolean>(false)
+
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [remember, setRemember] = useState<boolean>(false)
@@ -66,6 +68,16 @@ export default function LoginPage() {
     }
   }
 
+  useEffect(() => {
+    if (Cookies.get('auth')) {
+      setIsAuth(true)
+    }
+  }, [])
+
+  if (isAuth) {
+    return navigate('/')
+  }
+
   return (
     <main className="relative flex flex-col justify-between min-h-screen mx-auto bg-slate-50">
       <div className="relative flex justify-between gap-4 px-8 py-4">
@@ -98,7 +110,7 @@ export default function LoginPage() {
               <label className="ml-2" htmlFor="remember">Ingat saya</label>
             </div>
             <div className="w-full">
-              <PrimaryButton type="submit">Login</PrimaryButton>
+              <PrimaryButton type="submit" width="w-full">Login</PrimaryButton>
               {loginError && (
                 <p className="mt-2 text-sm text-red-500">{loginError}</p>
               )}

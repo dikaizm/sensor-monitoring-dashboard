@@ -1,13 +1,17 @@
-import { ChangeEvent, MouseEvent, useState } from "react"
+import { ChangeEvent, MouseEvent, useEffect, useState } from "react"
 import { MdEmail, MdLock, MdPerson } from "react-icons/md"
 import InputText from "../components/InputText"
 import appConfig from "../config/env"
 import { useNavigate } from "react-router-dom"
+import Cookies from 'js-cookie'
+
 import AppLogo from "../components/AppLogo"
 import PrimaryButton from "../components/PrimaryButton"
 import ModalAlert from "../components/ModalAlert"
 
 export default function RegisterPage() {
+  const [isAuth, setIsAuth] = useState<boolean>(false)
+
   const [name, setName] = useState<string>('')
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
@@ -86,6 +90,16 @@ export default function RegisterPage() {
     }
   }
 
+  useEffect(() => {
+    if (Cookies.get('auth')) {
+      setIsAuth(true)
+    }
+  }, [])
+
+  if (isAuth) {
+    return navigate('/')
+  }
+
   return (
     <main className="relative flex flex-col justify-between min-h-screen mx-auto bg-slate-50">
 
@@ -149,7 +163,7 @@ export default function RegisterPage() {
             </div>
 
             <div className="w-full">
-              <PrimaryButton type="submit" onClick={handleSubmit}>Daftar</PrimaryButton>
+              <PrimaryButton type="submit" onClick={handleSubmit} width="w-full">Daftar</PrimaryButton>
               {registerError && (<p className="mt-2 text-sm text-red-500">{registerError}</p>)}
             </div>
           </form>
