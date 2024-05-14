@@ -13,7 +13,8 @@ export default (sequelize: Sequelize, DataTypes: any) => {
     name: DataTypes.STRING,
     email: DataTypes.STRING,
     password: DataTypes.STRING,
-    role_id: DataTypes.INTEGER
+    role_id: DataTypes.INTEGER,
+    granted: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'users',

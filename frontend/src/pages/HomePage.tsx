@@ -1,12 +1,20 @@
 import { TbHeartRateMonitor } from "react-icons/tb"
 import AppLogo from "../components/AppLogo"
 import AuthenticatedLayout from "../components/AuthenticatedLayout"
+import { useEffect, useState } from "react"
+import Cookies from "js-cookie"
 
 export default function HomePage() {
+  const [isAuth, setIsAuth] = useState<boolean>(false)
 
-  const isAuthenticated: boolean = true
+  useEffect(() => {
+    const token = Cookies.get('auth')
+    if (token) {
+      setIsAuth(true)
+    }
+  }, [])
 
-  if (!isAuthenticated) {
+  if (!isAuth) {
     return (
       <div className="relative flex flex-col justify-between min-h-screen mx-auto bg-slate-50">
         <div className="relative flex justify-between gap-4 px-8 py-4">

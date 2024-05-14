@@ -6,6 +6,7 @@ import { TbLogout2 } from 'react-icons/tb'
 import { useState } from 'react'
 import { FaPerson } from 'react-icons/fa6'
 import { useNavigate } from 'react-router-dom'
+import Cookies from 'js-cookie'
 import { useToggleSidebar } from '../context/utils/sidebarContext'
 
 export default function Topbar() {
@@ -66,7 +67,10 @@ function ProfileDropdown({ isOpen }: { isOpen: boolean }) {
 
   function handleLogout(event: MouseEvent<HTMLButtonElement>) {
     event.preventDefault()
+    
     localStorage.removeItem('sidebar')
+    Cookies.remove('auth')
+
     navigate('/login')
   }
 

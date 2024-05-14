@@ -3,6 +3,8 @@ import { MdEmail, MdLock } from "react-icons/md"
 import InputText from "../components/InputText"
 import appConfig from "../config/env"
 import { useNavigate } from "react-router-dom"
+import Cookies from 'js-cookie'
+
 import AppLogo from "../components/AppLogo"
 import PrimaryButton from "../components/PrimaryButton"
 
@@ -46,13 +48,13 @@ export default function LoginPage() {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ email, password })
-      }).then(res => {
-        if (res.ok) return res.json()
-
-        throw new Error('Login failed')
       })
+      const data = await response.json()
+      if (!response.ok) {
+        throw new Error(data.message)
+      }
 
-      console.log(response)
+      Cookies.set('auth', data.token, { expires: remember ? 7 : 1 })
 
       return navigate('/')
 
@@ -60,7 +62,7 @@ export default function LoginPage() {
     } catch (error: any) {
       console.error(error)
 
-      setLoginError(error)
+      setLoginError(error.message)
     }
   }
 
@@ -97,7 +99,9 @@ export default function LoginPage() {
             </div>
             <div className="w-full">
               <PrimaryButton type="submit">Login</PrimaryButton>
-              {loginError && <p className="text-sm text-center text-red-500">{loginError}</p>}
+              {loginError && (
+                <p className="mt-2 text-sm text-red-500">{loginError}</p>
+              )}
             </div>
           </form>
 
