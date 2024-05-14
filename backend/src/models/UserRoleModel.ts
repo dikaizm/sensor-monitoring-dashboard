@@ -1,21 +1,23 @@
 'use strict';
 
 import { Model, Sequelize } from 'sequelize'
-import { ModelType } from '../types/model';
 
-export default (sequelize: Sequelize, DataTypes: any) => {
+export default function(sequelize: Sequelize, DataTypes: any) {
   class UserRole extends Model {
-    // static associate(models: ModelType) {
-    //   UserRole.hasMany(models.User)
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of Sequelize lifecycle.
+     * The `models/index` file will call this method automatically.
+     */
+    // static associate(models) {
+    //   // define association here
     // }
   }
   UserRole.init({
-    name: DataTypes.STRING,
-    view_access: DataTypes.BOOLEAN,
-    modify_access: DataTypes.BOOLEAN
+    role_name: DataTypes.STRING
   }, {
     sequelize,
-    modelName: 'UserRole',
+    modelName: 'user_roles',
   });
   return UserRole;
-}
+};

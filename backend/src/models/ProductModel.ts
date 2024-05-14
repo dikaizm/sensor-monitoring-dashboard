@@ -4,19 +4,17 @@ import { Model, Sequelize } from 'sequelize'
 import { ModelType } from '../types/model';
 
 export default (sequelize: Sequelize, DataTypes: any) => {
-  class User extends Model {
+  class Product extends Model {
     // static associate(models: ModelType) {
-    //   User.belongsTo(models.UserRole, { foreignKey: 'role_id' })
     // }
   }
-  User.init({
+  Product.init({
     name: DataTypes.STRING,
-    email: DataTypes.STRING,
-    password: DataTypes.STRING,
-    role_id: DataTypes.INTEGER
+    quantity: DataTypes.INTEGER,
+    date: DataTypes.DATE
   }, {
     sequelize,
-    modelName: 'users',
+    modelName: 'products',
   });
-  return User;
+  return Product;
 }

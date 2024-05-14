@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { UserType } from "./user"
+import { UserRequest, UserType } from "./user"
 import { ApiResponse } from "../utils/response"
 import { JwtPayload } from "jsonwebtoken"
 
@@ -12,7 +12,7 @@ interface AuthController {
 interface AuthService {
     login: (data: LoginType) => Promise<ApiResponse>
     logout: () => void
-    register: (data: UserType) => Promise<ApiResponse>
+    register: (data: UserRequest) => Promise<ApiResponse>
     refreshToken: (user: UserVerified) => ApiResponse
 }
 
@@ -25,6 +25,7 @@ interface UserVerified {
     id: number
     email: string
     name: string
+    role_id: number
     iat: number
     exp: number
 }

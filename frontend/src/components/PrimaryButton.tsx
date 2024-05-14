@@ -2,19 +2,20 @@ import { ReactNode } from "react"
 
 interface ButtonType {
     children: string
+    type?: "button" | "submit" | "reset" | undefined
     icon?: ReactNode
     style?: 'fill' | 'outline'
     onClick?: () => void
 }
 
-export default function PrimaryButton({ children, icon, style = 'fill', onClick }: ButtonType) {
+export default function PrimaryButton({ children, type = 'button', icon, style = 'fill', onClick }: ButtonType) {
     function getStyle(style?: 'fill' | 'outline') {
-        return style === 'fill' ? 'bg-blue-400 text-white' : 'border border-slate-400'
+        return style === 'fill' ? 'bg-blue-500 text-white' : 'border border-slate-500'
     }
 
     return (
-        <button type="button" onClick={onClick} className={"flex gap-2 items-center px-3 py-2 rounded-lg " + getStyle(style)}>
-            <span className="text-sm font-semibold">{children}</span>
+        <button type={type} onClick={onClick} className={"flex w-full gap-3 items-center justify-center px-2 py-2 rounded-lg " + getStyle(style)}>
+            <span className="font-semibold">{children}</span>
             {icon}
         </button>
     )

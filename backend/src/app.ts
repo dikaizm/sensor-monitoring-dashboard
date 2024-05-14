@@ -11,18 +11,15 @@ dotenv.config()
 const app: Express = express()
 const port = process.env.PORT || 3000
 
-startMqttSubscriber()
+// startMqttSubscriber()
 
 const corsOption = {
-    origin: '*',
+    origin: 'http://localhost:5173',
     credentials: true,
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
 }
 
-app.use(cookieParser())
 app.use(cors(corsOption))
+app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())

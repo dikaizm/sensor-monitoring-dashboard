@@ -1,9 +1,11 @@
 'use strict';
 
-import { Model, Sequelize } from 'sequelize';
+import { Sequelize } from 'sequelize';
 import { mysqlConfig } from '../config/database';
 
 import UserModel from './UserModel';
+import UserRoleModel from './UserRoleModel';
+import RegisterRequestModel from './RegisterRequestModel';
 
 const sequelize: Sequelize = new Sequelize(mysqlConfig.database, mysqlConfig.user, mysqlConfig.password, {
   host: mysqlConfig.host,
@@ -12,7 +14,9 @@ const sequelize: Sequelize = new Sequelize(mysqlConfig.database, mysqlConfig.use
 });
 
 const db: any = {
-  User: UserModel(sequelize, Sequelize)
+  User: UserModel(sequelize, Sequelize),
+  UserRole: UserRoleModel(sequelize, Sequelize),
+  RegisterRequest: RegisterRequestModel(sequelize, Sequelize),
 }
 
 Object.keys(db).forEach(modelName => {

@@ -1,9 +1,10 @@
 import { ChangeEvent, FormEvent, useState } from "react"
 import { MdEmail, MdLock } from "react-icons/md"
 import InputText from "../components/InputText"
-// import appConfig from "../config/env"
+import appConfig from "../config/env"
 import { useNavigate } from "react-router-dom"
 import AppLogo from "../components/AppLogo"
+import PrimaryButton from "../components/PrimaryButton"
 
 export default function LoginPage() {
   const [email, setEmail] = useState<string>('')
@@ -13,6 +14,7 @@ export default function LoginPage() {
   // error state
   const [emailError, setEmailError] = useState<string>('')
   const [passwordError, setPasswordError] = useState<string>('')
+  const [loginError, setLoginError] = useState<string>('')
 
   const navigate = useNavigate()
 
@@ -37,28 +39,29 @@ export default function LoginPage() {
 
     localStorage.setItem('sidebar', 'true')
 
-    return navigate('/')
+    try {
+      const response = await fetch(`${appConfig.apiUrl}/api/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password })
+      }).then(res => {
+        if (res.ok) return res.json()
 
-    // try {
-    //   const response = await fetch(`${appConfig.apiUrl}/api/auth/login`, {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json'
-    //     },
-    //     body: JSON.stringify({ email, password })
-    //   }).then(res => {
-    //     if (res.ok) return res.json()
+        throw new Error('Login failed')
+      })
 
-    //     throw new Error('Login failed')
-    //   })
+      console.log(response)
 
-    //   console.log(response)
+      return navigate('/')
 
-    //   return navigate('/dashboard')
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.error(error)
 
-    // } catch (error) {
-    //   console.error(error)
-    // }
+      setLoginError(error)
+    }
   }
 
   return (
@@ -92,7 +95,10 @@ export default function LoginPage() {
               <input type="checkbox" id="remember" onChange={handleRemember} checked={remember} />
               <label className="ml-2" htmlFor="remember">Ingat saya</label>
             </div>
-            <button type="submit" className="p-2 text-white bg-blue-500 rounded-lg">Login</button>
+            <div className="w-full">
+              <PrimaryButton type="submit">Login</PrimaryButton>
+              {loginError && <p className="text-sm text-center text-red-500">{loginError}</p>}
+            </div>
           </form>
 
         </div>

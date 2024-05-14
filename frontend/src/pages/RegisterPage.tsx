@@ -1,9 +1,10 @@
 import { ChangeEvent, FormEvent, useEffect, useState } from "react"
 import { MdEmail, MdLock, MdPerson } from "react-icons/md"
 import InputText from "../components/InputText"
-// import appConfig from "../config/env"
+import appConfig from "../config/env"
 import { useNavigate } from "react-router-dom"
 import AppLogo from "../components/AppLogo"
+import PrimaryButton from "../components/PrimaryButton"
 
 export default function RegisterPage() {
   const [name, setName] = useState<string>('')
@@ -16,6 +17,7 @@ export default function RegisterPage() {
   const [emailError, setEmailError] = useState<string>('')
   const [passwordError, setPasswordError] = useState<string>('')
   const [confirmPasswordError, setConfirmPasswordError] = useState<string>('')
+  const [registerError, setRegisterError] = useState<string>('')
 
   const navigate = useNavigate()
 
@@ -44,28 +46,28 @@ export default function RegisterPage() {
     if (password !== confirmPassword) setConfirmPasswordError('Password tidak sama')
     if (!name || !email || password.length < 6 || password !== confirmPassword) return
 
-    return navigate('/')
+    try {
+      const response = await fetch(`${appConfig.apiUrl}/api/auth/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password })
+      }).then(res => {
+        if (res.ok) return res.json()
 
-    // try {
-    //   const response = await fetch(`${appConfig.apiUrl}/api/auth/login`, {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json'
-    //     },
-    //     body: JSON.stringify({ email, password })
-    //   }).then(res => {
-    //     if (res.ok) return res.json()
+        throw new Error('Login failed')
+      })
 
-    //     throw new Error('Login failed')
-    //   })
+      console.log(response)
 
-    //   console.log(response)
+      return navigate('/')
 
-    //   return navigate('/dashboard')
-
-    // } catch (error) {
-    //   console.error(error)
-    // }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.error(error)
+      setRegisterError(error)
+    }
   }
 
   useEffect(() => {
@@ -106,7 +108,20 @@ export default function RegisterPage() {
               error={{ value: confirmPasswordError, setValue: setConfirmPasswordError }}
             />
 
-            <button type="submit" className="p-2 text-white bg-blue-500 rounded-lg">Daftar</button>
+            {/* select option */}
+            <div className="flex flex-col gap-2">
+              <label htmlFor="Role">Request Role</label>
+              <select name="Role" id="Role" className="p-2 border rounded-lg">
+                <option value="1">Admin</option>
+                <option value="2">Operator</option>
+                <option value="3">Marketing</option>
+              </select>
+            </div>
+
+            <div className="w-full">
+              <PrimaryButton type="submit">Daftar</PrimaryButton>
+              {registerError && <p className="text-sm text-center text-red-500">{registerError}</p>}
+            </div>
           </form>
 
         </div>

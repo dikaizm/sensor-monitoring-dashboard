@@ -19,7 +19,7 @@ async function createUser(data: UserType) {
 
     // create user
     const user = await db.User.create(data)
-    return response.success('User created successfully', user)
+    return response.success('User created successfully', user.dataValues, 201)
 }
 
 async function updateUser(data: UpdateUserType) {

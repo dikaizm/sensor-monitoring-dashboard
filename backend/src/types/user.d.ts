@@ -19,6 +19,12 @@ interface UserType {
     email: string
     password: string
     role_id: number
+    granted: boolean
+}
+
+interface UserRoleType {
+    id?: number
+    role_name: string
 }
 
 interface UpdateUserType {
@@ -26,4 +32,12 @@ interface UpdateUserType {
     name?: string
     password?: string
     user: UserVerified
+}
+
+interface UserRequest {
+    name: string
+    email: string
+    password: string
+    confirmPassword: string
+    roleRequest: string
 }
