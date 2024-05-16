@@ -8,8 +8,9 @@ export default function HomePage() {
   const [isAuth, setIsAuth] = useState<boolean>(false)
 
   useEffect(() => {
-    const token = Cookies.get('auth')
-    if (token) {
+    const authToken = Cookies.get('auth')
+   
+    if (authToken && authToken !== undefined) {
       setIsAuth(true)
     }
   }, [])

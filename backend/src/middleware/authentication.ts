@@ -14,12 +14,12 @@ export default function authMiddleware(req: Request, res: Response, next: NextFu
         const headerAuth: string | undefined = req.headers.authorization
 
         if (!headerAuth) {
-            return response.error('Unauthorized', null, 401)
+            return res.status(401).json({ success: false, message: 'Unauthorized' })
         }
 
         const token = headerAuth!.split(' ')[1]
         if (!token) {
-            return response.error('Unauthorized', null, 401)
+            return res.status(401).json({ success: false, message: 'Unauthorized' })
         }
 
         const payload: string | JwtPayload = verify(token, authConfig.secret)
@@ -27,16 +27,16 @@ export default function authMiddleware(req: Request, res: Response, next: NextFu
 
         const refreshToken: ApiResponse = authService.refreshToken(user)
         if (!refreshToken.isSuccess) {
-            return response.error(refreshToken.message, null, refreshToken.statusCode)
+            return refreshToken.send(res)
         }
-        
-        res.cookie('auth', refreshToken.data.token, { maxAge: 24 * 3600 * 1000, httpOnly: true })
+
+        res.cookie('auth', refreshToken.data.token, { maxAge: 24 * 3600 * 1000, secure: true, sameSite: 'none', httpOnly: true })
 
         req.body.user = user
         next()
-        
+
     } catch (error) {
         console.error(error)
-        return response.error('Internal server error', null, 500)
+        return res.status(500).json({ message: 'Internal server error' })
     }
 }

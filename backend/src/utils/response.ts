@@ -31,11 +31,13 @@ export class ApiResponse implements ResponseType {
     }
 
     send(res: Response) {
-        res.status(this.statusCode).json({
-            success: this.isSuccess,
-            message: this.message,
-            data: this.data
-        });
+        const response: any = {};
+
+        if (this.isSuccess !== undefined) response.success = this.isSuccess;
+        if (this.message) response.message = this.message;
+        if (this.data !== null) response.data = this.data;
+
+        res.status(this.statusCode).json(response);
     }
 }
 

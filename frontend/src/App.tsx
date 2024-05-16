@@ -5,6 +5,7 @@ import ProductionLinePage from './pages/ProductionLinePage'
 import ProductionResultPage from './pages/ProductionResultPage'
 import RegisterPage from './pages/RegisterPage'
 import { TooltipContextProvider } from './context/TooltipContext'
+import { SensorContextProvider } from './context/SensorDataContext'
 
 function App() {
   return (
@@ -16,10 +17,16 @@ function App() {
           <Route path='/register' element={<RegisterPage />} />
           <Route path='/dashboard/line' element={
             <TooltipContextProvider>
-              <ProductionLinePage />
+              <SensorContextProvider>
+                <ProductionLinePage />
+              </SensorContextProvider>
             </TooltipContextProvider>
           } />
-          <Route path='/dashboard/result' element={<ProductionResultPage />} />
+          <Route path='/dashboard/result' element={
+            <SensorContextProvider>
+              <ProductionResultPage />
+            </SensorContextProvider>
+          } />
         </Routes>
       </Router>
     </main>

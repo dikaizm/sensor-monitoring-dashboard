@@ -5,13 +5,11 @@ import { JwtPayload } from "jsonwebtoken"
 
 interface AuthController {
     login: (req: Request, res: Response) => Promise<void>
-    logout: (req: Request, res: Response) => void
     register: (req: Request, res: Response) => Promise<void>
 }
 
 interface AuthService {
     login: (data: LoginType) => Promise<ApiResponse>
-    logout: () => void
     register: (data: UserRequest) => Promise<ApiResponse>
     refreshToken: (user: UserVerified) => ApiResponse
 }
@@ -25,7 +23,7 @@ interface UserVerified {
     id: number
     email: string
     name: string
-    role_id: number
+    role: string
     iat: number
     exp: number
 }

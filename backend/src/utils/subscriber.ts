@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import mqtt from 'mqtt'
+import mqtt, { MqttClient } from 'mqtt'
 import mqttConfig from '../config/mqtt'
 
 const mqttOptions = {
@@ -22,18 +22,18 @@ const urlConfig = {
 
 const connectUrl = `${urlConfig.protocol}://${urlConfig.host}:${urlConfig.port}`
 
-const client = mqtt.connect(connectUrl, mqttOptions)
+const mqttClient: MqttClient = mqtt.connect(connectUrl, mqttOptions)
 
 const topic: string = mqttConfig.topic
 
-export default function startMqttSubscriber() {
-    client.on('connect', () => {
+function startMqttSubscriber() {
+    mqttClient.on('connect', () => {
         console.log('mqtt connected');
 
-        client.subscribe([topic], () => {
+        mqttClient.subscribe([topic], () => {
             console.log(`Subscribe to topic '${topic}'`)
 
-            client.publish(topic, 'sensor mqtt test', { qos: 1, retain: true }, (error) => {
+            mqttClient.publish(topic, 'sensor mqtt test', { qos: 1, retain: true }, (error) => {
                 if (error) {
                     console.error(error)
                 }
@@ -41,7 +41,9 @@ export default function startMqttSubscriber() {
         })
     })
 
-    client.on('message', (topic, payload) => {
-        console.log('Received Message:', topic, payload.toString())
-    })
+    // mqttClient.on('message', (topic, payload) => {
+    //     console.log('Received Message:', topic, payload.toString())
+    // })
 }
+
+export { startMqttSubscriber, mqttClient }

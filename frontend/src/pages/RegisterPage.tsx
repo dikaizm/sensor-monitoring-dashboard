@@ -97,7 +97,8 @@ export default function RegisterPage() {
   }, [])
 
   if (isAuth) {
-    return navigate('/')
+    navigate('/')
+    return <></>
   }
 
   return (

@@ -38,3 +38,10 @@ input[type="number"] {
     border: 1px solid red;
   }
 }
+
+.toaster-wrapper > div {
+  display: none !important;
+}
+.toaster-wrapper > div:nth-child(-n + 3) {
+  display: flex !important;
+}

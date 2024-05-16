@@ -4,6 +4,7 @@ import TooltipWindow from "../components/TooltipWindow";
 import ModalWindow from "../components/ModalWindow";
 import { useToggleTooltip } from "../context/utils/tooltipContext";
 import TooltipLabel from "../components/TooltipLabel";
+import { useSensorData } from "../context/utils/sensorDataContext";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mouseHoverReducer(state: any, action: any) {
@@ -28,6 +29,8 @@ function mouseHoverReducer(state: any, action: any) {
 export default function ProductionLinePage() {
   const [mouseHoverState, mouseHoverDispatch] = useReducer(mouseHoverReducer, { photoelectric: false, camera: false, conveyor: false })
   const { tooltipState, tooltipDispatch } = useToggleTooltip()
+
+  const { sensorData } = useSensorData()
 
   return (
     <AuthenticatedLayout className="h-screen overflow-x-auto">
@@ -88,8 +91,8 @@ export default function ProductionLinePage() {
                             </div>
 
                             <div className="flex flex-col gap-2">
-                              <p>ON</p>
-                              <p>100%</p>
+                              <p>{sensorData.conveyor_status.value}</p>
+                              <p>{sensorData.conveyor_speed.value}</p>
                             </div>
                           </div>
                         </TooltipWindow>
@@ -118,7 +121,7 @@ export default function ProductionLinePage() {
                             </div>
 
                             <div className="flex flex-col gap-2">
-                              <p>OK</p>
+                              <p>{sensorData.camera.value}</p>
                             </div>
                           </div>
                         </TooltipWindow>)}
@@ -148,7 +151,7 @@ export default function ProductionLinePage() {
                           </div>
 
                           <div className="flex flex-col gap-2">
-                            <p>14</p>
+                            <p>{sensorData.photoelectric.value}</p>
                           </div>
                         </div>
                       </TooltipWindow>)}

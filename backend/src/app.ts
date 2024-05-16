@@ -4,17 +4,18 @@ import router from './routes/rest'
 import path from 'path'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
-import startMqttSubscriber from './utils/subscriber'
+import http from 'http'
+import { startMqttSubscriber, mqttClient } from './utils/subscriber'
+import startWebsocketServer from './routes/websocket'
+import authConfig from './config/auth'
 
 dotenv.config()
 
 const app: Express = express()
 const port = process.env.PORT || 3000
 
-// startMqttSubscriber()
-
 const corsOption = {
-    origin: 'http://localhost:5173',
+    origin: authConfig.clientUrl,
     credentials: true,
 }
 
@@ -27,6 +28,10 @@ app.use(express.json())
 app.use('/api', router)
 console.log('[server]: Router loaded');
 
-app.listen(port, () => {
+const server = http.createServer(app)
+startMqttSubscriber()
+startWebsocketServer(server, mqttClient)
+
+server.listen(port, () => {
     console.log(`[server]: Server is running on port ${port}`)
 })

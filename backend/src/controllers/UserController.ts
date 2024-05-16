@@ -5,6 +5,7 @@ import { ApiResponse } from "../utils/response";
 
 const userController: UserController = {
     updateUser,
+    grantAccessUser,
     deleteUser
 }
 
@@ -13,6 +14,14 @@ async function updateUser(req: Request, res: Response) {
     const data: UpdateUserType = req.body
 
     const result: ApiResponse = await userService.updateUser(data)
+
+    return result.send(res)
+}
+
+async function grantAccessUser(req: Request, res: Response) {
+    const data = req.body
+
+    const result: ApiResponse = await userService.grantAccessUser(req, data)
 
     return result.send(res)
 }

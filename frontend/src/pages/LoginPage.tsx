@@ -41,22 +41,22 @@ export default function LoginPage() {
     if (!password) setPasswordError('Password tidak boleh kosong')
     if (!email || !password) return
 
-    localStorage.setItem('sidebar', 'true')
-
     try {
       const response = await fetch(`${appConfig.apiUrl}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password }),
+        credentials: 'include'
       })
-      const data = await response.json()
+      const result = await response.json()
       if (!response.ok) {
-        throw new Error(data.message)
+        throw new Error(result.message)
       }
 
-      Cookies.set('auth', data.token, { expires: remember ? 7 : 1 })
+      localStorage.setItem('sidebar', 'true')
+      localStorage.setItem('user', JSON.stringify(result.data.user))
 
       return navigate('/')
 
@@ -69,13 +69,15 @@ export default function LoginPage() {
   }
 
   useEffect(() => {
-    if (Cookies.get('auth')) {
+    const authToken = Cookies.get('auth')
+    if (authToken && authToken !== undefined) {
       setIsAuth(true)
     }
   }, [])
 
   if (isAuth) {
-    return navigate('/')
+    navigate('/')
+    return <></>
   }
 
   return (

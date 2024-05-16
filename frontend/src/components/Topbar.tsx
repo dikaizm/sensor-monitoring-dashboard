@@ -12,6 +12,14 @@ import { useToggleSidebar } from '../context/utils/sidebarContext'
 export default function Topbar() {
   const [isProfilOpen, setIsProfilOpen] = useState<boolean>(false)
   const { isSidebarOpen, toggleSidebar } = useToggleSidebar()
+  const [userInfo, setUserInfo] = useState<UserInfoType>()
+
+  useEffect(() => {
+    const user = localStorage.getItem('user')
+    if (user) {
+      setUserInfo(JSON.parse(user))
+    }
+  }, [])
 
   const profileRef = useRef<HTMLDivElement>(null)
 
@@ -52,22 +60,28 @@ export default function Topbar() {
 
       <section ref={profileRef} className='relative'>
         <button type="button" onClick={handleProfileClick} className={'flex items-center gap-2 p-2 border rounded-full  hover:bg-slate-200 ' + (isProfilOpen ? 'bg-slate-200' : 'border-slate-300')}>
-          <span className='text-sm font-semibold'>John Doe</span>
+          <span className='text-sm font-semibold'>{userInfo?.name}</span>
           <BsPersonCircle className='w-6 h-6' />
         </button>
 
-        <ProfileDropdown isOpen={isProfilOpen} />
+        <ProfileDropdown isOpen={isProfilOpen} userInfo={userInfo} />
       </section>
     </header>
   )
 }
 
-function ProfileDropdown({ isOpen }: { isOpen: boolean }) {
+interface UserInfoType {
+  name: string
+  email: string
+  role: string
+}
+
+function ProfileDropdown({ isOpen, userInfo }: { isOpen: boolean, userInfo?: UserInfoType }) {
   const navigate = useNavigate()
 
   function handleLogout(event: MouseEvent<HTMLButtonElement>) {
     event.preventDefault()
-    
+
     localStorage.removeItem('sidebar')
     Cookies.remove('auth')
 
@@ -79,8 +93,8 @@ function ProfileDropdown({ isOpen }: { isOpen: boolean }) {
       <div className='flex items-center gap-3 p-2'>
         <BsPersonCircle className='w-8 h-8' />
         <div>
-          <p className='text-sm font-semibold'>John Doe</p>
-          <p className='text-xs text-slate-400'>test@mail.com</p>
+          <p className='text-sm font-semibold'>{userInfo?.name}</p>
+          <p className='text-xs text-slate-400'>{userInfo?.email}</p>
         </div>
       </div>
 
@@ -89,7 +103,7 @@ function ProfileDropdown({ isOpen }: { isOpen: boolean }) {
           <div className='p-1 bg-white rounded-full w-7 h-7'>
             <FaPerson className='w-full h-full text-slate-500' />
           </div>
-          <p className='text-xs font-medium'>Administrator</p>
+          <p className='text-xs font-medium'>{userInfo?.role}</p>
         </div>
 
         <hr className='border-slate-200' />

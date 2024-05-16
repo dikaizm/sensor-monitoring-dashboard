@@ -6,10 +6,10 @@ import response from "../utils/response";
 import userService from "./userService";
 import bcrypt from 'bcrypt'
 import authConfig from "../config/auth";
+import { capitalizeFirstLetter } from "../utils/globalUtils";
 
 const authService: AuthService = {
     login,
-    logout,
     register,
     refreshToken
 }
@@ -18,7 +18,13 @@ async function login(data: LoginType) {
     const { email, password } = data
 
     try {
-        const user: UserType = await db.User.findOne({ where: { email } })
+        const user: UserType = await db.User.findOne({ 
+            where: { email },
+            include: {
+                model: db.UserRole,
+                attributes: ['role_name']
+            }
+        })
         if (!user) return response.error('User not found', null, 404)
 
         const isValidPassword = await bcrypt.compare(password, user.password)
@@ -30,20 +36,22 @@ async function login(data: LoginType) {
             id: user.id,
             email: user.email,
             name: user.name,
-            role_id: user.role_id
+            role: user.user_role?.role_name
         }, authConfig.secret, {
             expiresIn: '8h'
         })
 
-        return response.success('Login successful', { token }, 201)
+        const userResponse = {
+            name: user.name,
+            email: user.email,
+            role: capitalizeFirstLetter(user.user_role?.role_name || '')
+        }
+
+        return response.success('Login successful', { token, user: userResponse }, 201)
     } catch (error: any) {
         console.log(error);
         return response.error(error.message)
     }
-}
-
-function logout() {
-
 }
 
 async function register(data: RegisterType) {
@@ -67,7 +75,7 @@ async function register(data: RegisterType) {
             name: data.name,
             email: data.email,
             password: data.password,
-            role_id: guestRole.dataValues.id, // guest role
+            role_id: guestRole.dataValues.id,
             granted: false
         }
 
@@ -101,7 +109,7 @@ function refreshToken(user: UserVerified) {
                 id: user.id,
                 email: user.email,
                 name: user.name,
-                role_id: user.role_id
+                role: user.role
             }, authConfig.secret, {
                 expiresIn: '8h'
             })

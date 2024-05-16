@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { Toaster } from 'react-hot-toast';
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 import { SidebarContextProvider } from "../context/SidebarContext";
@@ -12,12 +13,29 @@ interface AuthenticatedLayoutType {
 export default function AuthenticatedLayout({ children, className }: AuthenticatedLayoutType) {
   return (
     <SidebarContextProvider>
+
+      <Toaster
+        containerClassName='toaster-wrapper'
+        containerStyle={{
+          fontSize: '0.75rem',
+        }}
+        toastOptions={{
+          style: {
+            background: '#282B39',
+            color: '#fff',
+            borderRadius: '999px',
+            border: '1px solid #5E6982',
+          }
+        }}
+      />
+
       <Topbar />
       <Sidebar />
 
       <InsiderLayout className={className}>
         {children}
       </InsiderLayout>
+
     </SidebarContextProvider>
   )
 }

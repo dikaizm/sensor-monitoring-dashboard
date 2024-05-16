@@ -5,9 +5,9 @@ import { ModelType } from '../types/model';
 
 export default (sequelize: Sequelize, DataTypes: any) => {
   class User extends Model {
-    // static associate(models: ModelType) {
-    //   User.belongsTo(models.UserRole, { foreignKey: 'role_id' })
-    // }
+    static associate(models: ModelType) {
+      User.belongsTo(models.UserRole, { foreignKey: 'role_id' })
+    }
   }
   User.init({
     name: DataTypes.STRING,
