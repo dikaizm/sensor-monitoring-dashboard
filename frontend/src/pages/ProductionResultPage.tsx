@@ -88,4 +88,16 @@ const productionResults: ProductionResultType[] = [
     quantity: 14,
     date: "14/10/2023"
   },
+  {
+    id: 2,
+    name: "Genteng",
+    quantity: 21,
+    date: "15/10/2023"
+  },
+  {
+    id: 3,
+    name: "Genteng",
+    quantity: 18,
+    date: "16/10/2023"
+  },
 ]
