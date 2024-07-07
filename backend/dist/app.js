@@ -10,8 +10,6 @@ const path_1 = __importDefault(require("path"));
 const cors_1 = __importDefault(require("cors"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const http_1 = __importDefault(require("http"));
-const subscriber_1 = require("./routes/mqtt/subscriber");
-const websocket_1 = __importDefault(require("./routes/websocket"));
 const auth_1 = __importDefault(require("./config/auth"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
@@ -28,8 +26,8 @@ app.use(express_1.default.json());
 app.use('/api', rest_1.default);
 console.log('[server]: Router loaded');
 const server = http_1.default.createServer(app);
-(0, subscriber_1.startMqttSubscriber)();
-(0, websocket_1.default)(server, subscriber_1.mqttClient);
+// startMqttSubscriber()
+// startWebsocketServer(server, mqttClient)
 server.listen(port, () => {
     console.log(`[server]: Server is running on port ${port}`);
 });
