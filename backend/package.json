@@ -2,7 +2,7 @@
   "name": "sensor-monitoring-dashboard",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/app.js",
+  "main": "app.js",
   "scripts": {
     "build": "npx tsc",
     "dev": "nodemon src/app.ts",
@@ -32,6 +32,7 @@
     "@types/express": "^4.17.21",
     "@types/node": "^20.12.7",
     "nodemon": "^3.1.0",
+    "sequelize-cli": "^6.6.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.5"
   }
