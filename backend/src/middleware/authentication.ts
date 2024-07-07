@@ -26,7 +26,7 @@ export default function authMiddleware(req: Request, res: Response, next: NextFu
             return refreshToken.send(res)
         }
 
-        res.cookie('auth', refreshToken.data.token, { maxAge: 24 * 3600 * 1000, secure: true, sameSite: 'none', httpOnly: true })
+        res.cookie('auth', refreshToken.data.token, { maxAge: 24 * 3600 * 1000, secure: false, sameSite: 'none', httpOnly: true })
 
         req.body.user = user
         next()
