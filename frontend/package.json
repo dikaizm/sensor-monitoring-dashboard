@@ -1,5 +1,5 @@
 {
-  "name": "frontend",
+  "name": "sensor-monitoring",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -7,18 +7,26 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "serve": "serve dist"
   },
   "dependencies": {
+    "@react-three/csg": "^3.1.0",
+    "@react-three/drei": "^9.88.17",
+    "@react-three/fiber": "^8.15.11",
+    "@react-three/postprocessing": "^2.15.11",
     "@types/js-cookie": "^3.0.6",
+    "@types/three": "^0.166.0",
     "js-cookie": "^3.0.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hot-toast": "^2.4.1",
     "react-icons": "^5.2.0",
-    "react-router-dom": "^6.23.0"
+    "react-router-dom": "^6.23.0",
+    "three": "^0.158.0"
   },
   "devDependencies": {
+    "@types/node": "^20.14.10",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
@@ -29,6 +37,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
     "postcss": "^8.4.38",
+    "sass": "^1.69.5",
     "tailwindcss": "^3.4.3",
     "typescript": "^5.2.2",
     "vite": "^5.2.0"

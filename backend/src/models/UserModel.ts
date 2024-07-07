@@ -14,7 +14,7 @@ export default (sequelize: Sequelize, DataTypes: any) => {
     email: DataTypes.STRING,
     password: DataTypes.STRING,
     role_id: DataTypes.INTEGER,
-    granted: DataTypes.BOOLEAN
+    granted: DataTypes.BOOLEAN,
   }, {
     sequelize,
     modelName: 'users',

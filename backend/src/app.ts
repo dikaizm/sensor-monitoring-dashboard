@@ -5,7 +5,7 @@ import path from 'path'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import http from 'http'
-import { startMqttSubscriber, mqttClient } from './utils/subscriber'
+import { startMqttSubscriber, mqttClient } from './routes/mqtt/subscriber'
 import startWebsocketServer from './routes/websocket'
 import authConfig from './config/auth'
 

@@ -37,7 +37,7 @@ export default function startWebsocketServer(server: any, mqttClient: MqttClient
             ws.send(JSON.stringify({ "message": "Terhubung ke sensor", "message_type": "alert", "status": "success" }));
 
             mqttClient.on('message', (topic, payload) => {
-                console.log('Received Message:', topic, payload.toString())
+                // console.log('Received Message:', topic, payload.toString())
                 ws.send(payload.toString());
             })
         });

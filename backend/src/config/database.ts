@@ -10,4 +10,15 @@ const mysqlConfig = {
     database: process.env.MYSQL_DATABASE || 'test',
 }
 
-export { mysqlConfig }
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+    apiKey: "AIzaSyCe4eMA3dDGn1Ic-585EGzsxGc5qhRuPVg",
+    authDomain: "sensor-monitoring-ysf.firebaseapp.com",
+    projectId: "sensor-monitoring-ysf",
+    storageBucket: "sensor-monitoring-ysf.appspot.com",
+    messagingSenderId: "646956221747",
+    appId: "1:646956221747:web:0bcb186fa252d44e71aa46",
+    measurementId: "G-TLL1LVRZ8K"
+};
+
+export { mysqlConfig, firebaseConfig }

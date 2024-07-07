@@ -92,7 +92,7 @@ async function register(data: RegisterType) {
         }
         await db.RegisterRequest.create(newRegisterReq)
 
-        return response.success('Register success', null, 201)
+        return response.success('Register success. Please wait for access approval.', null, 201)
     } catch (error: any) {
         console.error(error)
         return response.error(error.message, null, 500)

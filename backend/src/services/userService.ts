@@ -69,7 +69,8 @@ async function grantAccessUser(req: Request, data: GrantAccessRequest) {
         }
 
         const currentUser = req.body.user;
-        if (currentUser.role !== 'admin') {
+
+        if (!currentUser || currentUser.role !== 'admin') {
             return response.error('Access denied', null, 401);
         }
 

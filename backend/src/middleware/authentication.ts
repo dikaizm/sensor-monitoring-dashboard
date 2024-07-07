@@ -3,11 +3,7 @@ import { JwtPayload, verify } from "jsonwebtoken";
 import authConfig from "../config/auth";
 import authService from "../services/authService";
 import { UserVerified } from "../types/auth";
-import response, { ApiResponse } from "../utils/response";
-
-interface UserRequest extends Request {
-    user: UserVerified
-}
+import { ApiResponse } from "../utils/response";
 
 export default function authMiddleware(req: Request, res: Response, next: NextFunction) {
     try {
@@ -35,7 +31,11 @@ export default function authMiddleware(req: Request, res: Response, next: NextFu
         req.body.user = user
         next()
 
-    } catch (error) {
+    } catch (error: any) {
+        if (error.name === 'TokenExpiredError') {
+            return res.status(401).json({ message: 'Token expired' })
+        }
+        
         console.error(error)
         return res.status(500).json({ message: 'Internal server error' })
     }
