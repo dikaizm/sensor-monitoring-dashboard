@@ -16,7 +16,7 @@ const jsonwebtoken_1 = require("jsonwebtoken");
 const models_1 = __importDefault(require("../models"));
 const response_1 = __importDefault(require("../utils/response"));
 const userService_1 = __importDefault(require("./userService"));
-const bcrypt_1 = __importDefault(require("bcrypt"));
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const auth_1 = __importDefault(require("../config/auth"));
 const globalUtils_1 = require("../utils/globalUtils");
 const authService = {
@@ -38,7 +38,7 @@ function login(data) {
             });
             if (!user)
                 return response_1.default.error('User not found', null, 404);
-            const isValidPassword = yield bcrypt_1.default.compare(password, user.password);
+            const isValidPassword = yield bcryptjs_1.default.compare(password, user.password);
             if (!isValidPassword)
                 return response_1.default.error('Invalid password', null, 401);
             if (!user.granted)
@@ -71,7 +71,7 @@ function register(data) {
             if (isUserExist)
                 return response_1.default.error('User already exist', null, 400);
             // hash password
-            const hashedPassword = yield bcrypt_1.default.hash(data.password, 10);
+            const hashedPassword = yield bcryptjs_1.default.hash(data.password, 10);
             if (!hashedPassword)
                 return response_1.default.error('Failed to hash password', null, 500);
             data.password = hashedPassword;

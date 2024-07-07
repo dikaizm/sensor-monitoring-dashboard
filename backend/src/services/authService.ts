@@ -4,7 +4,7 @@ import { AuthService, LoginType, RegisterType, UserVerified } from "../types/aut
 import { UserType } from "../types/user";
 import response from "../utils/response";
 import userService from "./userService";
-import bcrypt from 'bcrypt'
+import bcrypt from 'bcryptjs';
 import authConfig from "../config/auth";
 import { capitalizeFirstLetter } from "../utils/globalUtils";
 
