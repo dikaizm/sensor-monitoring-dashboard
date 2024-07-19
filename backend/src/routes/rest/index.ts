@@ -4,11 +4,30 @@ import authRoutes from './authRoute'
 import productRoutes from './productRoute'
 import authMiddleware from '../../middleware/authentication'
 import sensorRoutes from './sensorRoute'
+import db from '../../models'
 
 const router = Router()
 
+// Function to record sensor active time end
+async function recordSensorEndTime(clientId: string) {
+    const activeTime = await db.SensorActiveTime.findOne({
+        where: { clientId: clientId, end_time: null },
+        order: [['start_time', 'DESC']]
+    });
+
+    if (activeTime) {
+        const currentTime = new Date();
+        const runningSec = Math.floor((currentTime.getTime() - activeTime.start_time.getTime()) / 1000);
+        await activeTime.update({ end_time: currentTime, running_sec: runningSec });
+        console.log(`Recorded end time for sensor ${clientId} at ${currentTime}`);
+    } else {
+        console.log(`No active time record found for sensor ${clientId}`);
+    }
+}
+
 const clients = new Map<string, { lastActive: number; timeout: NodeJS.Timeout }>();
-const INACTIVITY_TIMEOUT = 2000; // 10 seconds
+const INACTIVITY_TIMEOUT = 120000; // 120 seconds
+
 // Middleware to track clients' requests
 router.use((req, res, next) => {
     const type = req.query.type;
@@ -25,9 +44,10 @@ router.use((req, res, next) => {
             }
 
             // Set a new inactivity timeout
-            const timeout = setTimeout(() => {
+            const timeout = setTimeout(async () => {
                 console.log(`Client ${clientId} is inactive. Recording end time: ${new Date(currentTime)}`);
                 // Record the sensor activity end time here
+                await recordSensorEndTime(clientId);
                 clients.delete(clientId);
             }, INACTIVITY_TIMEOUT);
 

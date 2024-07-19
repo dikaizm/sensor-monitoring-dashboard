@@ -1,8 +1,5 @@
-import { Suspense } from "react";
-// import { useReducer } from "react";
+import { Suspense, useEffect, useState } from "react";
 import AuthenticatedLayout from "../components/AuthenticatedLayout";
-import ModalWindow from "../components/ModalWindow";
-// import { useToggleTooltip } from "../context/utils/tooltipContext";
 // import { useSensorData } from "../context/utils/sensorDataContext";
 import { Canvas } from "@react-three/fiber";
 import ModelGroup from "@/components/3d/ModelGroup";
@@ -10,38 +7,19 @@ import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import Ground from "@/components/3d/scenes/Ground";
 import { Environment } from "@/components/3d/scenes/Environment";
 import Lights from "@/components/3d/scenes/Lights";
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-// function mouseHoverReducer(state: any, action: any) {
-//   switch (action.type) {
-//     case "IN_photoelectric":
-//       return { ...state, photoelectric: true };
-//     case "OUT_photoelectric":
-//       return { ...state, photoelectric: false };
-//     case "IN_camera":
-//       return { ...state, camera: true };
-//     case "OUT_camera":
-//       return { ...state, camera: false };
-//     case "IN_conveyor":
-//       return { ...state, conveyor: true };
-//     case "OUT_conveyor":
-//       return { ...state, conveyor: false };
-//     default:
-//       return state;
-//   }
-// }
+import ModalWindow from "@/components/ModalWindow";
+import { useToggleWindow } from "@/context/utils/windowContext";
+import appConfig from "@/config/env";
+import Cookies from "js-cookie";
+import { checkAuthStatus } from "@/util/checkAuth";
 
 export default function ProductionLine3DPage() {
-  // const [mouseHoverState, mouseHoverDispatch] = useReducer(mouseHoverReducer, { photoelectric: false, camera: false, conveyor: false })
-  // const { tooltipState, tooltipDispatch } = useToggleTooltip()
 
   // const { sensorData } = useSensorData()
 
   return (
     <AuthenticatedLayout className="h-screen overflow-x-auto">
       <div className="relative h-full place-item-center place-content-center">
-
-        <ModalWindow />
 
         <Suspense fallback={
           <div className="flex flex-col items-center justify-center h-full bg-scene">
@@ -75,14 +53,113 @@ export default function ProductionLine3DPage() {
             />
             <PerspectiveCamera makeDefault fov={60} position={[0, 200, -300]} />
 
-            {/* <axesHelper args={[150]} /> */}
+            <axesHelper args={[150]} />
 
           </Canvas>
 
-          {/* <Windows /> */}
+          <SensorWindows />
 
         </Suspense>
       </div>
     </AuthenticatedLayout>
+  )
+}
+
+function SensorWindows() {
+  const { windowState, windowDispatch } = useToggleWindow()
+  const [conveyorStatus, setConveyorStatus] = useState<boolean>(false)
+  const [conveyorCooldown, setConveyorCooldown] = useState<boolean>(false)
+
+  async function getConveyorStatus() {
+    const response = await fetch(`${appConfig.apiUrl}/api/sensor/conveyor/status`)
+    const data = await response.json()
+
+    setConveyorStatus(data.data.status)
+  }
+
+  async function toggleConveyorStatus() {
+    if (conveyorCooldown) return;
+
+    const response = await fetch(`${appConfig.apiUrl}/api/sensor/conveyor/toggle`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${Cookies.get("auth")}`
+      }
+    })
+    // Handle response if unauthorized
+    checkAuthStatus(response);
+    const data = await response.json()
+    console.log(data);
+
+    setConveyorCooldown(true)
+    setTimeout(() => {
+      setConveyorCooldown(false)
+    }, 3000)
+
+    setConveyorStatus(data.data.status)
+  }
+
+  useEffect(() => {
+    getConveyorStatus()
+  }, [])
+
+  return (
+    <>
+      {
+        windowState.conveyor && (
+          <ModalWindow title="Conveyor" onClose={() => {
+            windowDispatch({ type: "conveyor" })
+          }}>
+            {/* Status and toggle */}
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-semibold text-slate-700">Status</p>
+              {/* Toggle input */}
+              <label className={"relative inline-flex items-center " + (!conveyorCooldown ? "cursor-pointer" : "cursor-progress")}>
+                <input type="checkbox" className="sr-only peer"
+                  checked={conveyorStatus}
+                  onChange={toggleConveyorStatus}
+                  disabled={conveyorCooldown}
+                />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              </label>
+            </div>
+
+            {/* Motor speed */}
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-semibold text-slate-700">Motor speed</p>
+              <p className="text-sm font-semibold text-slate-700">100%</p>
+            </div>
+          </ModalWindow>
+        )
+      }
+
+      {
+        windowState.camera && (
+          <ModalWindow title="Camera Inspection" onClose={() => {
+            windowDispatch({ type: "camera" })
+          }}>
+            {/* Camera feed */}
+            <div className="flex items-center justify-center">
+            </div>
+          </ModalWindow>
+        )
+      }
+
+      {
+        windowState.photoelectric && (
+          <ModalWindow title="Photoelectric Sensor" onClose={() => {
+            windowDispatch({ type: "photoelectric" })
+          }}>
+            {/* Sensor status */}
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-semibold text-slate-700">Status</p>
+              <p className="text-sm font-semibold text-slate-700">Normal</p>
+            </div>
+          </ModalWindow>
+        )
+      }
+
+    </>
   )
 }

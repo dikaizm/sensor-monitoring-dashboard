@@ -1,30 +1,31 @@
 import { ReactNode, useReducer } from "react";
-import { TooltipContext } from "./utils/tooltipContext";
+import { WindowContext } from "./utils/windowContext";
 
-interface TooltipContextProviderStateType {
+interface WindowContextProviderStateType {
+  [key: string]: boolean;
   photoelectric: boolean;
   camera: boolean;
   conveyor: boolean;
 }
 
-export function TooltipContextProvider({ children }: { children: ReactNode }) {
+export function WindowContextProvider({ children }: { children: ReactNode }) {
 
-  const initialState: TooltipContextProviderStateType = {
+  const initialState: WindowContextProviderStateType = {
     photoelectric: false,
     camera: false,
     conveyor: false
   };
 
-  const [tooltipState, tooltipDispatch] = useReducer(sensorClickReducer, initialState);
+  const [windowState, windowDispatch] = useReducer(sensorClickReducer, initialState);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  function sensorClickReducer(state: TooltipContextProviderStateType, action: any) {
+  function sensorClickReducer(state: WindowContextProviderStateType, action: any) {
     switch (action.type) {
-      case "CLICK_conveyor":
+      case "conveyor":
         return { conveyor: !state.conveyor, photoelectric: false, camera: false };
-      case "CLICK_photoelectric":
+      case "photoelectric":
         return { photoelectric: !state.photoelectric, conveyor: false, camera: false };
-      case "CLICK_camera":
+      case "camera":
         return { camera: !state.camera, conveyor: false, photoelectric: false };
       default:
         return state;
@@ -32,8 +33,8 @@ export function TooltipContextProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <TooltipContext.Provider value={{ tooltipState, tooltipDispatch }} >
+    <WindowContext.Provider value={{ windowState, windowDispatch }} >
       {children}
-    </TooltipContext.Provider>
+    </WindowContext.Provider>
   );
 }

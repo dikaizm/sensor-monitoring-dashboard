@@ -48,12 +48,14 @@ export default function LoginPage() {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ email, password }),
-        credentials: 'include'
+        // credentials: 'include'
       })
       const result = await response.json()
       if (!response.ok) {
         throw new Error(result.message)
       }
+
+      Cookies.set('auth', result.data.token, { expires: remember ? 7 : 1 })
 
       localStorage.setItem('sidebar', 'true')
       localStorage.setItem('user', JSON.stringify(result.data.user))

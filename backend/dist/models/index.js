@@ -9,6 +9,7 @@ const UserModel_1 = __importDefault(require("./UserModel"));
 const UserRoleModel_1 = __importDefault(require("./UserRoleModel"));
 const RegisterRequestModel_1 = __importDefault(require("./RegisterRequestModel"));
 const SensorModel_1 = __importDefault(require("./SensorModel"));
+const SensorActiveTimeModel_1 = __importDefault(require("./SensorActiveTimeModel"));
 const sequelize = new sequelize_1.Sequelize(database_1.mysqlConfig.database, database_1.mysqlConfig.user, database_1.mysqlConfig.password, {
     host: database_1.mysqlConfig.host,
     port: database_1.mysqlConfig.port,
@@ -19,6 +20,7 @@ const db = {
     UserRole: (0, UserRoleModel_1.default)(sequelize, sequelize_1.Sequelize),
     RegisterRequest: (0, RegisterRequestModel_1.default)(sequelize, sequelize_1.Sequelize),
     Sensor: (0, SensorModel_1.default)(sequelize, sequelize_1.Sequelize),
+    SensorActiveTime: (0, SensorActiveTimeModel_1.default)(sequelize, sequelize_1.Sequelize),
 };
 Object.keys(db).forEach(modelName => {
     if (db[modelName].associate) {

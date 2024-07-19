@@ -20,17 +20,33 @@ router.get('/toggle', authentication_1.default, (req, res) => __awaiter(void 0, 
     try {
         const conveyor = yield models_1.default.Sensor.findOne({ where: { name: 'conveyor' } });
         if (!conveyor) {
-            return res.status(404).send({ message: 'Conveyor not found' });
+            return res.status(404).send({ success: false, error: 'Conveyor not found' });
         }
         // Toggle conveyor status
         const status = !conveyor.is_active;
-        yield models_1.default.Sensor.update({ is_active: status }, { where: { name: 'conveyor' } });
+        const dbRes = yield models_1.default.Sensor.update({ is_active: status }, { where: { name: 'conveyor' } });
+        if (!dbRes) {
+            return res.status(500).send({ success: false, error: 'Failed to toggle conveyor status' });
+        }
+        // Set sensor active time to start
+        if (status) {
+            yield models_1.default.SensorActiveTime.create({ sensor_id: conveyor.id, start_time: new Date() });
+        }
+        else {
+            // Set sensor active time to end
+            const activeTime = yield models_1.default.SensorActiveTime.findOne({ where: { sensor_id: conveyor.id, end_time: null }, order: [['start_time', 'DESC']] });
+            if (activeTime) {
+                const currentTime = new Date();
+                const runningSec = Math.floor((currentTime.getTime() - activeTime.start_time.getTime()) / 1000);
+                yield activeTime.update({ end_time: currentTime, running_sec: runningSec });
+            }
+        }
         // Send response as json
-        res.status(200).send({ message: 'Toggle command sent!', data: { status } });
+        res.status(200).send({ success: true, message: 'Toggle command sent!', data: { status } });
     }
     catch (error) {
         // Send error as json
-        res.status(500).send({ message: error.message });
+        res.status(500).send({ success: false, error: error.message });
     }
 }));
 router.get('/status', (req, res) => __awaiter(void 0, void 0, void 0, function* () {

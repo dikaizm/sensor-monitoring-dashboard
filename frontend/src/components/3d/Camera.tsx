@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Select } from '@react-three/postprocessing';
 import Model from './Model';
 
@@ -11,6 +11,7 @@ import labelRunning from "@assets/panel/running/camera.svg"
 import labelWarning from "@assets/panel/warning/camera.svg"
 import { useModel3DLabel } from '@/util/handleModel3DLabel';
 import { Model3DLabel2 } from '../tooltip/Model3DLabel';
+import { useToggleWindow } from '@/context/utils/windowContext';
 
 const statusSvg: StatusSvgType = {
   idle: labelIdle,
@@ -19,10 +20,19 @@ const statusSvg: StatusSvgType = {
 }
 
 export default function CameraModel({ keyId, position, rotation, scale, clickable = true }: CameraType) {
+  const { windowState, windowDispatch } = useToggleWindow()
   const [isHover, setIsHover] = useState<boolean>(false)
 
   const mtlPath = '/assets/model_3d/camera/camera.mtl'
   const objPath = '/assets/model_3d/camera/camera.obj'
+
+  useEffect(() => {
+    if (windowState[keyId]) {
+      setIsHover(true)
+    } else {
+      setIsHover(false)
+    }
+  }, [windowState, keyId])
 
   return (
     <Select enabled={isHover && clickable}>
@@ -32,6 +42,11 @@ export default function CameraModel({ keyId, position, rotation, scale, clickabl
         scale={scale}
         onClick={() => {
           setIsHover(!isHover)
+          clickable && windowDispatch({ type: keyId })
+        }}
+        onPointerOver={() => setIsHover(true)}
+        onPointerOut={() => {
+          if (!windowState[keyId]) setIsHover(false)
         }}
       >
         <Model objPath={objPath} mtlPath={mtlPath} />

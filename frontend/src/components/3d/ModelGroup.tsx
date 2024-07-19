@@ -3,7 +3,7 @@ import { useRef } from 'react'
 import { Group, Object3DEventMap } from 'three';
 import ConveyorModel from './Conveyor';
 import CameraModel from './Camera';
-import PhotoelectricModel from './Photoelectric';
+import UltrasonicModel from './Ultrasonic';
 import BoxModel from './Box';
 
 const boxType = {
@@ -46,7 +46,7 @@ export default function ModelGroup({ position = [0, 0, 0] }: ModelGroupType) {
         <group position={[100, 0, 0]}>
           <ConveyorModel keyId={'conveyor'} />
           <CameraModel keyId={'camera'} position={[0, 62, 0]} />
-          <PhotoelectricModel keyId={'photoelectric'} position={[-13, 62, -70]} />
+          <UltrasonicModel keyId={'ultrasonic'} position={[-13, 62, -70]} />
         </group>
 
         <group position={[0, 0, 0]}>

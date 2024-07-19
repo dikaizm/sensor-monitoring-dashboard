@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -9,9 +18,28 @@ const authRoute_1 = __importDefault(require("./authRoute"));
 const productRoute_1 = __importDefault(require("./productRoute"));
 const authentication_1 = __importDefault(require("../../middleware/authentication"));
 const sensorRoute_1 = __importDefault(require("./sensorRoute"));
+const models_1 = __importDefault(require("../../models"));
 const router = (0, express_1.Router)();
+// Function to record sensor active time end
+function recordSensorEndTime(clientId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const activeTime = yield models_1.default.SensorActiveTime.findOne({
+            where: { clientId: clientId, end_time: null },
+            order: [['start_time', 'DESC']]
+        });
+        if (activeTime) {
+            const currentTime = new Date();
+            const runningSec = Math.floor((currentTime.getTime() - activeTime.start_time.getTime()) / 1000);
+            yield activeTime.update({ end_time: currentTime, running_sec: runningSec });
+            console.log(`Recorded end time for sensor ${clientId} at ${currentTime}`);
+        }
+        else {
+            console.log(`No active time record found for sensor ${clientId}`);
+        }
+    });
+}
 const clients = new Map();
-const INACTIVITY_TIMEOUT = 2000; // 10 seconds
+const INACTIVITY_TIMEOUT = 120000; // 120 seconds
 // Middleware to track clients' requests
 router.use((req, res, next) => {
     const type = req.query.type;
@@ -25,11 +53,12 @@ router.use((req, res, next) => {
                 clearTimeout(clients.get(clientId).timeout);
             }
             // Set a new inactivity timeout
-            const timeout = setTimeout(() => {
+            const timeout = setTimeout(() => __awaiter(void 0, void 0, void 0, function* () {
                 console.log(`Client ${clientId} is inactive. Recording end time: ${new Date(currentTime)}`);
                 // Record the sensor activity end time here
+                yield recordSensorEndTime(clientId);
                 clients.delete(clientId);
-            }, INACTIVITY_TIMEOUT);
+            }), INACTIVITY_TIMEOUT);
             // Update the client's last active time and timeout
             clients.set(clientId, { lastActive: currentTime, timeout });
         }
