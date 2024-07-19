@@ -29,8 +29,8 @@ app.use('/api', router)
 console.log('[server]: Router loaded');
 
 const server = http.createServer(app)
-// startMqttSubscriber()
-// startWebsocketServer(server, mqttClient)
+startMqttSubscriber()
+startWebsocketServer(server, mqttClient)
 
 server.listen(port, () => {
     console.log(`[server]: Server is running on port ${port}`)

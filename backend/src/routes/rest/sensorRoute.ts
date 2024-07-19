@@ -1,9 +1,10 @@
 import { Router } from "express";
 import db from "../../models";
+import authMiddleware from "../../middleware/authentication";
 
 const router = Router()
 
-router.get('/toggle', async (req, res) => {
+router.get('/toggle', authMiddleware, async (req, res) => {
     try {
         const conveyor = await db.Sensor.findOne({ where: { name: 'conveyor' } })
         if (!conveyor) {

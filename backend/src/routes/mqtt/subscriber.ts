@@ -30,10 +30,10 @@ const topic: string = mqttConfig.topic
 
 function startMqttSubscriber() {
     mqttClient.on('connect', () => {
-        console.log('mqtt connected');
+        console.log('[server]: mqtt connected');
 
         mqttClient.subscribe([topic], () => {
-            console.log(`Subscribe to topic '${topic}'`)
+            console.log(`[server]: Subscribe to topic '${topic}'`)
 
             mqttClient.publish(topic, JSON.stringify({ 'message': 'Sensor mqtt test' }), { qos: 1, retain: true }, (error) => {
                 if (error) {
@@ -45,7 +45,7 @@ function startMqttSubscriber() {
 
     mqttClient.on('message', (topic, payload) => {
         const payloadStr = payload.toString()
-        // console.log('Received Message:', topic, payloadStr)
+        console.log('Received Message:', topic, payloadStr)
 
         const data = JSON.parse(payloadStr)        
 

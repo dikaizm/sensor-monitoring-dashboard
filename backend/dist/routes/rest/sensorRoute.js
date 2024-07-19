@@ -14,8 +14,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const models_1 = __importDefault(require("../../models"));
+const authentication_1 = __importDefault(require("../../middleware/authentication"));
 const router = (0, express_1.Router)();
-router.get('/toggle', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get('/toggle', authentication_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const conveyor = yield models_1.default.Sensor.findOne({ where: { name: 'conveyor' } });
         if (!conveyor) {
