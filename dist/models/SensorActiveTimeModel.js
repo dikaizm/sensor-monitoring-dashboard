@@ -9,6 +9,7 @@ exports.default = (sequelize, DataTypes) => {
     }
     SensorActiveTime.init({
         sensor_id: DataTypes.INTEGER,
+        client_id: DataTypes.TEXT,
         start_time: DataTypes.DATE,
         end_time: DataTypes.DATE,
         running_sec: DataTypes.INTEGER,

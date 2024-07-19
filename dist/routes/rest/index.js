@@ -39,7 +39,7 @@ function recordSensorEndTime(clientId) {
     });
 }
 const clients = new Map();
-const INACTIVITY_TIMEOUT = 120000; // 120 seconds
+const INACTIVITY_TIMEOUT = 5000; // 120 seconds
 // Middleware to track clients' requests
 router.use((req, res, next) => {
     const type = req.query.type;

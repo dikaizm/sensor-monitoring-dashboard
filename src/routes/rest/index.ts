@@ -26,7 +26,7 @@ async function recordSensorEndTime(clientId: string) {
 }
 
 const clients = new Map<string, { lastActive: number; timeout: NodeJS.Timeout }>();
-const INACTIVITY_TIMEOUT = 120000; // 120 seconds
+const INACTIVITY_TIMEOUT = 5000; // 120 seconds
 
 // Middleware to track clients' requests
 router.use((req, res, next) => {

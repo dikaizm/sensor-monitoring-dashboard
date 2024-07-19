@@ -19,10 +19,10 @@ router.get('/toggle', authMiddleware, async (req, res) => {
         }
         // Set sensor active time to start
         if (status) {
-            await db.SensorActiveTime.create({ sensor_id: conveyor.id, start_time: new Date() })
+            await db.SensorActiveTime.create({ sensor_id: conveyor.id, start_time: new Date(), client_id: req.ip })
         } else {
             // Set sensor active time to end
-            const activeTime = await db.SensorActiveTime.findOne({ where: { sensor_id: conveyor.id, end_time: null }, order: [['start_time', 'DESC']] })
+            const activeTime = await db.SensorActiveTime.findOne({ where: { sensor_id: conveyor.id, end_time: null, client_id: req.ip }, order: [['start_time', 'DESC']] })
             
             if (activeTime) {
                 const currentTime = new Date()

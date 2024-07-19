@@ -30,11 +30,11 @@ router.get('/toggle', authentication_1.default, (req, res) => __awaiter(void 0, 
         }
         // Set sensor active time to start
         if (status) {
-            yield models_1.default.SensorActiveTime.create({ sensor_id: conveyor.id, start_time: new Date() });
+            yield models_1.default.SensorActiveTime.create({ sensor_id: conveyor.id, start_time: new Date(), client_id: req.ip });
         }
         else {
             // Set sensor active time to end
-            const activeTime = yield models_1.default.SensorActiveTime.findOne({ where: { sensor_id: conveyor.id, end_time: null }, order: [['start_time', 'DESC']] });
+            const activeTime = yield models_1.default.SensorActiveTime.findOne({ where: { sensor_id: conveyor.id, end_time: null, client_id: req.ip }, order: [['start_time', 'DESC']] });
             if (activeTime) {
                 const currentTime = new Date();
                 const runningSec = Math.floor((currentTime.getTime() - activeTime.start_time.getTime()) / 1000);
