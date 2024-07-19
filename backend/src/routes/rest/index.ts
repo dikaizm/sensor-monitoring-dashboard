@@ -3,6 +3,7 @@ import userRoutes from './userRoute'
 import authRoutes from './authRoute'
 import productRoutes from './productRoute'
 import authMiddleware from '../../middleware/authentication'
+import sensorRoutes from './sensorRoute'
 
 const router = Router()
 
@@ -13,5 +14,6 @@ router.get('/', (req: Request, res: Response) => {
 router.use('/auth', authRoutes)
 router.use('/user', authMiddleware, userRoutes)
 router.use('/product', authMiddleware, productRoutes)
+router.use('/sensor/conveyor', sensorRoutes)
 
 export default router
