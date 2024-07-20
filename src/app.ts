@@ -7,7 +7,6 @@ import cookieParser from 'cookie-parser'
 import http from 'http'
 import { startMqttSubscriber, mqttClient } from './routes/mqtt/subscriber'
 import startWebsocketServer from './routes/websocket'
-import authConfig from './config/auth'
 
 dotenv.config()
 
@@ -28,8 +27,8 @@ app.use(express.json())
 app.use('/api', router)
 console.log('[server]: Router loaded');
 
-const server = http.createServer(app)
 startMqttSubscriber()
+const server = http.createServer(app)
 startWebsocketServer(server, mqttClient)
 
 server.listen(port, () => {

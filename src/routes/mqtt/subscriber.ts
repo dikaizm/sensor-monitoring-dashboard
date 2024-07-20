@@ -4,6 +4,7 @@ import mqtt, { MqttClient } from 'mqtt'
 import mqttConfig from '../../config/mqtt'
 import { fire } from '../../utils/firebase'
 import { PhotoelectricType } from '../../types/sensor'
+import startWebsocketServer from '../websocket'
 
 const mqttOptions = {
     clientId: `mqtt_${Math.random().toString(16).slice(3)}`,
@@ -47,7 +48,7 @@ function startMqttSubscriber() {
         const payloadStr = payload.toString()
         console.log('Received Message:', topic, payloadStr)
 
-        const data = JSON.parse(payloadStr)        
+        const data = JSON.parse(payloadStr)
 
         // Save to database
         if (data.tag_name === 'photoelectric') {
@@ -61,4 +62,14 @@ function startMqttSubscriber() {
     })
 }
 
-export { startMqttSubscriber, mqttClient }
+function checkMqttConnection(): boolean {
+    if (mqttClient.connected) {
+        console.log('[server]: mqtt connected');
+        return true
+    } else {
+        console.log('[server]: mqtt not connected');
+        return false
+    }
+}
+
+export { startMqttSubscriber, checkMqttConnection, mqttClient }

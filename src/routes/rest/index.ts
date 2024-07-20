@@ -9,11 +9,19 @@ import db from '../../models'
 const router = Router()
 
 // Function to record sensor active time end
-async function recordSensorEndTime(clientId: string) {
-    const activeTime = await db.SensorActiveTime.findOne({
-        where: { clientId: clientId, end_time: null },
-        order: [['start_time', 'DESC']]
-    });
+async function recordSensorEndTime(clientId?: string) {
+    if (!clientId) {
+        const conveyor = await db.Sensor.findOne({ where: { name: 'conveyor' } });
+        var activeTime = await db.SensorActiveTime.findOne({
+            where: { sensor_id: conveyor.id, end_time: null },
+            order: [['start_time', 'DESC']]
+        });
+    } else {
+        var activeTime = await db.SensorActiveTime.findOne({
+            where: { client_id: clientId, end_time: null },
+            order: [['start_time', 'DESC']]
+        });
+    }
 
     if (activeTime) {
         const currentTime = new Date();
@@ -26,7 +34,7 @@ async function recordSensorEndTime(clientId: string) {
 }
 
 const clients = new Map<string, { lastActive: number; timeout: NodeJS.Timeout }>();
-const INACTIVITY_TIMEOUT = 5000; // 120 seconds
+const INACTIVITY_TIMEOUT = 120000; // 120 seconds
 
 // Middleware to track clients' requests
 router.use((req, res, next) => {
@@ -47,7 +55,7 @@ router.use((req, res, next) => {
             const timeout = setTimeout(async () => {
                 console.log(`Client ${clientId} is inactive. Recording end time: ${new Date(currentTime)}`);
                 // Record the sensor activity end time here
-                await recordSensorEndTime(clientId);
+                await recordSensorEndTime();
                 clients.delete(clientId);
             }, INACTIVITY_TIMEOUT);
 

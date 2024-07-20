@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.mqttClient = exports.startMqttSubscriber = void 0;
+exports.mqttClient = exports.checkMqttConnection = exports.startMqttSubscriber = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const mqtt_1 = __importDefault(require("mqtt"));
@@ -54,3 +54,14 @@ function startMqttSubscriber() {
     });
 }
 exports.startMqttSubscriber = startMqttSubscriber;
+function checkMqttConnection() {
+    if (mqttClient.connected) {
+        console.log('[server]: mqtt connected');
+        return true;
+    }
+    else {
+        console.log('[server]: mqtt not connected');
+        return false;
+    }
+}
+exports.checkMqttConnection = checkMqttConnection;

@@ -2,6 +2,7 @@ import WebSocket from 'ws'
 import jwt from 'jsonwebtoken'
 import authConfig from '../../config/auth'
 import { MqttClient } from 'mqtt'
+import { checkMqttConnection } from '../mqtt/subscriber';
 
 export default function startWebsocketServer(server: any, mqttClient: MqttClient) {
     const wss = new WebSocket.Server({ server });
@@ -34,10 +35,16 @@ export default function startWebsocketServer(server: any, mqttClient: MqttClient
                 console.log(`Received message from ${ws.email}: ${message}`);
             });
 
+            if (!checkMqttConnection()) {
+                ws.send(JSON.stringify({ "message": "Gagal terhubung ke sensor", "message_type": "alert", "status": "error" }));
+                ws.close(1006, 'Server error');
+                return;
+            }
+
             ws.send(JSON.stringify({ "message": "Terhubung ke sensor", "message_type": "alert", "status": "success" }));
 
             mqttClient.on('message', (topic, payload) => {
-                // console.log('Received Message:', topic, payload.toString())
+                console.log('Received Message:', topic, payload.toString())
                 ws.send(payload.toString());
             })
         });

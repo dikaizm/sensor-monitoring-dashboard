@@ -26,8 +26,8 @@ app.use(express_1.default.urlencoded({ extended: true }));
 app.use(express_1.default.json());
 app.use('/api', rest_1.default);
 console.log('[server]: Router loaded');
-const server = http_1.default.createServer(app);
 (0, subscriber_1.startMqttSubscriber)();
+const server = http_1.default.createServer(app);
 (0, websocket_1.default)(server, subscriber_1.mqttClient);
 server.listen(port, () => {
     console.log(`[server]: Server is running on port ${port}`);

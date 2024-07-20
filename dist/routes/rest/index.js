@@ -23,10 +23,19 @@ const router = (0, express_1.Router)();
 // Function to record sensor active time end
 function recordSensorEndTime(clientId) {
     return __awaiter(this, void 0, void 0, function* () {
-        const activeTime = yield models_1.default.SensorActiveTime.findOne({
-            where: { clientId: clientId, end_time: null },
-            order: [['start_time', 'DESC']]
-        });
+        if (!clientId) {
+            const conveyor = yield models_1.default.Sensor.findOne({ where: { name: 'conveyor' } });
+            var activeTime = yield models_1.default.SensorActiveTime.findOne({
+                where: { sensor_id: conveyor.id, end_time: null },
+                order: [['start_time', 'DESC']]
+            });
+        }
+        else {
+            var activeTime = yield models_1.default.SensorActiveTime.findOne({
+                where: { client_id: clientId, end_time: null },
+                order: [['start_time', 'DESC']]
+            });
+        }
         if (activeTime) {
             const currentTime = new Date();
             const runningSec = Math.floor((currentTime.getTime() - activeTime.start_time.getTime()) / 1000);
@@ -39,7 +48,7 @@ function recordSensorEndTime(clientId) {
     });
 }
 const clients = new Map();
-const INACTIVITY_TIMEOUT = 5000; // 120 seconds
+const INACTIVITY_TIMEOUT = 120000; // 120 seconds
 // Middleware to track clients' requests
 router.use((req, res, next) => {
     const type = req.query.type;
@@ -56,7 +65,7 @@ router.use((req, res, next) => {
             const timeout = setTimeout(() => __awaiter(void 0, void 0, void 0, function* () {
                 console.log(`Client ${clientId} is inactive. Recording end time: ${new Date(currentTime)}`);
                 // Record the sensor activity end time here
-                yield recordSensorEndTime(clientId);
+                yield recordSensorEndTime();
                 clients.delete(clientId);
             }), INACTIVITY_TIMEOUT);
             // Update the client's last active time and timeout
