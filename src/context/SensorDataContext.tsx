@@ -79,7 +79,7 @@ export function SensorContextProvider({ children }: SensorDataType) {
       socketRef.current.addEventListener('message', (event) => {
         const message: MessageType = JSON.parse(event.data);
 
-        console.log(message)
+        // console.log(message)
 
         if (message.message_type === 'alert') {
           if (message.status === 'success') {
