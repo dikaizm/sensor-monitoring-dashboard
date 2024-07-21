@@ -50,7 +50,7 @@ export default function ProductionResultPage() {
     }, 0);
 
     setTotalQty(total + parseInt(sensorData.ultrasonic.value, 10));
-  }, [sensorData.ultrasonic.value, productionResults]);
+  }, [sensorData.ultrasonic.value, productionResults, editProdModal]);
 
   useEffect(() => {
     if (editProdModal) {
