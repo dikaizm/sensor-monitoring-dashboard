@@ -13,6 +13,16 @@ import ExcelJS from 'exceljs';
 import { useUser } from "@/context/utils/userContext";
 import { UserRole } from "@/types/constant";
 
+const isToday = (date: string) => {
+  const today = new Date();
+  const givenDate = new Date(date);
+  return (
+    today.getFullYear() === givenDate.getFullYear() &&
+    today.getMonth() === givenDate.getMonth() &&
+    today.getDate() === givenDate.getDate()
+  );
+};
+
 export type ProductionResultType = {
   id: number;
   name: string;
@@ -28,9 +38,19 @@ export default function ProductionResultPage() {
   const { sensorData } = useSensorData()
   const { user } = useUser()
   const [productionResults, setProductionResults] = useState<ProductionResultType[]>([])
+  const [totalQty, setTotalQty] = useState<number>(0)
 
   const [editProdModal, setEditProdModal] = useState<boolean>(false)
   const [idModal, setIdModal] = useState<number>(0)
+
+  useEffect(() => {
+    const filteredResults = productionResults.filter(item => !isToday(item.createdAt));
+    const total = filteredResults.reduce((acc, item) => {
+      return acc + parseInt(item.quantity, 10);
+    }, 0);
+
+    setTotalQty(total + parseInt(sensorData.ultrasonic.value, 10));
+  }, [sensorData.ultrasonic.value, productionResults]);
 
   useEffect(() => {
     if (editProdModal) {
@@ -160,7 +180,7 @@ export default function ProductionResultPage() {
             )}
           </div>
 
-          <div className="relative mt-6 overflow-x-auto border rounded-lg">
+          <div className="relative max-h-[34rem] mt-6 overflow-x-auto border rounded-lg">
             <table className="w-full text-sm text-left text-gray-500 rtl:text-right">
               <thead className="text-xs text-gray-700 uppercase bg-slate-100">
                 <tr>
@@ -194,6 +214,13 @@ export default function ProductionResultPage() {
                 }} />
               </tbody>
             </table>
+          </div>
+
+          <div className="w-full mt-4 bg-white border rounded">
+            <div className="flex items-center justify-between p-4 font-semibold">
+              <h4>Total Produksi</h4>
+              <p className="px-3 py-1 text-white bg-green-600 rounded-full">{totalQty}</p>
+            </div>
           </div>
         </div>
       </AuthenticatedLayout>
