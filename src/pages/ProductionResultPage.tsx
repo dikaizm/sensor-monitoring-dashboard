@@ -180,7 +180,7 @@ export default function ProductionResultPage() {
                     Tanggal Diperbarui
                   </th>
 
-                  {(user?.role === UserRole.ADMIN) && (
+                  {(user?.role === UserRole.ADMIN || user?.role === UserRole.MARKETING) && (
                     <th scope="col" className="px-6 py-3">
                       <span className="sr-only">Edit</span>
                     </th>
@@ -238,7 +238,7 @@ function TableRow({ data, setState }: TableRowType) {
               {reformatISODateTime(item.updatedAt)}
             </td>
 
-            {(user?.role === UserRole.ADMIN) &&
+            {(user?.role === UserRole.ADMIN || user?.role === UserRole.MARKETING) &&
               (
                 <td className="px-6 py-4 text-right">
                   <button type="button" className="font-medium text-blue-600 hover:underline" onClick={() => {
