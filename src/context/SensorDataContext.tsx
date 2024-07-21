@@ -4,8 +4,6 @@ import appConfig from '../config/env';
 import Cookies from 'js-cookie'
 import { SensorContext } from './utils/sensorDataContext';
 import { useNavigate } from 'react-router-dom';
-import { useUser } from './utils/userContext';
-import { UserRole } from '@/types/constant';
 
 interface MessageType {
   [key: string]: string
@@ -21,7 +19,6 @@ type SensorDataType = {
 
 export function SensorContextProvider({ children }: SensorDataType) {
   const navigate = useNavigate()
-  const { user } = useUser()
 
   const socketRef = useRef<WebSocket | null>(null);
   const [sensorData, setSensorData] = useState<SensorType>({
@@ -84,7 +81,7 @@ export function SensorContextProvider({ children }: SensorDataType) {
 
         // console.log(message)
 
-        if (message.message_type === 'alert' && user?.role !== UserRole.MARKETING) {
+        if (message.message_type === 'alert') {
           if (message.status === 'success') {
             toast.success(message.message);
           } else {
