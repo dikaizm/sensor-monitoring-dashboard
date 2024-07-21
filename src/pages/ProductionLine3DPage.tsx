@@ -167,7 +167,7 @@ function SensorWindows() {
           }}>
             <div className="flex items-center justify-between">
               <p className="text-sm font-semibold text-slate-700">Condition</p>
-              <p className="text-sm font-semibold text-slate-700">{(sensorData.camera.value == "1" ? "OK" : "Reject")}</p>
+              <p className="text-sm font-semibold text-slate-700">{(sensorData.camera.value == 'true' ? "Reject" : "OK")}</p>
             </div>
           </ModalWindow>
         )
