@@ -14,7 +14,7 @@ export default function Sidebar() {
         <MenuItem link="/" icon={<GoHomeFill className='w-6 h-6' />}>Beranda</MenuItem>
         {/* <MenuItem link="/dashboard/line" icon={<BiSolidFactory className='w-6 h-6' />}>Lantai Produksi</MenuItem> */}
 
-        <MenuItem link="/dashboard/line-3d" icon={<BiSolidFactory className='w-6 h-6' />}>Lantai Produksi 3D</MenuItem>
+        <MenuItem link="/dashboard/line-3d" icon={<BiSolidFactory className='w-6 h-6' />}>Lantai Produksi</MenuItem>
 
         <MenuItem link="/dashboard/result" icon={<RiDatabase2Fill className='w-6 h-6' />}>Hasil Produksi</MenuItem>
       </section>
