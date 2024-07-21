@@ -82,7 +82,7 @@ router.get('/ultrasonic/:id', async (req, res) => {
 
 router.put('/ultrasonic/:id', async (req, res) => {
     // Check role
-    if (req.body.user.role === 'admin' || req.body.user.role === 'marketing') {
+    if (req.body.user.role !== 'operator') {
         return res.status(403).json({ success: false, message: 'Unauthorized' })
     }
 
