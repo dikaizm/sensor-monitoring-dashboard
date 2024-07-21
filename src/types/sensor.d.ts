@@ -1,30 +1,22 @@
 export interface MqttSensorType {
     tag_name: string
     value: string
-    timestamp: string
+    timestamp: any
     message_type: string
 }
 
-export interface PhotoelectricType {
-    status: string
-    created_at: string
+export interface UltrasonicType {
+    value: boolean
+    created_at: any
 }
 
 export interface CameraType {
     value: string
-    created_at: string
+    created_at: any
 }
 
 export interface ConveyorType {
     status: string
     speed: string
-    created_at: string
-}
-
-export interface ProductTodayType {
-    product_code: string
-    name: string
-    quantity: number
-    created_at: string
-    updated_at: string
+    created_at: any
 }

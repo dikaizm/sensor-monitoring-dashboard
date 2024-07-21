@@ -17,6 +17,7 @@ interface AuthService {
 interface LoginType {
     email: string
     password: string
+    remember: boolean
 }
 
 interface UserVerified {

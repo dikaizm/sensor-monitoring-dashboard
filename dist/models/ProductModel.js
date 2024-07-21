@@ -5,8 +5,8 @@ exports.default = (sequelize, DataTypes) => {
     class Product extends sequelize_1.Model {
     }
     Product.init({
-        name: DataTypes.STRING,
-        quantity: DataTypes.INTEGER
+        product_code: DataTypes.STRING,
+        product_name: DataTypes.STRING
     }, {
         sequelize,
         modelName: 'products',

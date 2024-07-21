@@ -9,8 +9,8 @@ export default (sequelize: Sequelize, DataTypes: any) => {
     // }
   }
   Product.init({
-    name: DataTypes.STRING,
-    quantity: DataTypes.INTEGER
+    product_code: DataTypes.STRING,
+    product_name: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'products',

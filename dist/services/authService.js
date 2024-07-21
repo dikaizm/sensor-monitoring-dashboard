@@ -18,7 +18,6 @@ const response_1 = __importDefault(require("../utils/response"));
 const userService_1 = __importDefault(require("./userService"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const auth_1 = __importDefault(require("../config/auth"));
-const globalUtils_1 = require("../utils/globalUtils");
 const authService = {
     login,
     register,
@@ -27,7 +26,7 @@ const authService = {
 function login(data) {
     return __awaiter(this, void 0, void 0, function* () {
         var _a, _b;
-        const { email, password } = data;
+        const { email, password, remember } = data;
         try {
             const user = yield models_1.default.User.findOne({
                 where: { email },
@@ -49,12 +48,12 @@ function login(data) {
                 name: user.name,
                 role: (_a = user.user_role) === null || _a === void 0 ? void 0 : _a.role_name
             }, auth_1.default.secret, {
-                expiresIn: '8h'
+                expiresIn: remember ? '7d' : '24h'
             });
             const userResponse = {
                 name: user.name,
                 email: user.email,
-                role: (0, globalUtils_1.capitalizeFirstLetter)(((_b = user.user_role) === null || _b === void 0 ? void 0 : _b.role_name) || '')
+                role: (_b = user.user_role) === null || _b === void 0 ? void 0 : _b.role_name
             };
             return response_1.default.success('Login successful', { token, user: userResponse }, 201);
         }
@@ -84,7 +83,7 @@ function register(data) {
                 name: data.name,
                 email: data.email,
                 password: data.password,
-                role_id: guestRole.dataValues.id,
+                role_id: data.roleRequest ? currentUserRole.dataValues.id : guestRole.dataValues.id,
                 granted: false
             };
             const createUser = yield userService_1.default.createUser(newUser);

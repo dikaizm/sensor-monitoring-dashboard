@@ -4,4 +4,6 @@ export interface ModelType {
     RegisterRequest: any
     Sensor: any
     SensorActiveTime: any
+    Product: any
+    Production: any
 }

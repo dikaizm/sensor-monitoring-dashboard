@@ -1,6 +1,7 @@
 import { Router } from "express";
 import db from "../../models";
 import authMiddleware from "../../middleware/authentication";
+import sensorServer from "../../config/sensor";
 
 const router = Router()
 
@@ -11,19 +12,26 @@ router.get('/toggle', authMiddleware, async (req, res) => {
             return res.status(404).send({ success: false, error: 'Conveyor not found' })
         }
 
+        try {
+            await fetch(`${sensorServer.api}/move`)
+        } catch (error) {
+            throw new Error('Failed to send command to sensor server')
+        }
+
         // Toggle conveyor status
         const status = !conveyor.is_active
         const dbRes = await db.Sensor.update({ is_active: status }, { where: { name: 'conveyor' } })
         if (!dbRes) {
             return res.status(500).send({ success: false, error: 'Failed to toggle conveyor status' })
         }
+
         // Set sensor active time to start
         if (status) {
             await db.SensorActiveTime.create({ sensor_id: conveyor.id, start_time: new Date(), client_id: req.ip })
         } else {
             // Set sensor active time to end
             const activeTime = await db.SensorActiveTime.findOne({ where: { sensor_id: conveyor.id, end_time: null, client_id: req.ip }, order: [['start_time', 'DESC']] })
-            
+
             if (activeTime) {
                 const currentTime = new Date()
                 const runningSec = Math.floor((currentTime.getTime() - activeTime.start_time.getTime()) / 1000)

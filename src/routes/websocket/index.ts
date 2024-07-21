@@ -3,6 +3,8 @@ import jwt from 'jsonwebtoken'
 import authConfig from '../../config/auth'
 import { MqttClient } from 'mqtt'
 import { checkMqttConnection } from '../mqtt/subscriber';
+import db from '../../models';
+import { Op } from 'sequelize';
 
 export default function startWebsocketServer(server: any, mqttClient: MqttClient) {
     const wss = new WebSocket.Server({ server });
@@ -43,9 +45,28 @@ export default function startWebsocketServer(server: any, mqttClient: MqttClient
 
             ws.send(JSON.stringify({ "message": "Terhubung ke sensor", "message_type": "alert", "status": "success" }));
 
-            mqttClient.on('message', (topic, payload) => {
-                console.log('Received Message:', topic, payload.toString())
-                ws.send(payload.toString());
+            mqttClient.on('message', async (topic, payload) => {
+                const payloadStr = payload.toString()
+                // console.log('Received Message:', topic, payloadStr)
+
+                const data = JSON.parse(payloadStr)
+                if (data.tag_name === 'ultrasonic' && data.value) {
+                    const todayCount = await db.Production.findOne({
+                        where: {
+                            createdAt: {
+                                [Op.gte]: new Date(new Date().setHours(0, 0, 0, 0)),
+                                [Op.lt]: new Date(new Date().setHours(23, 59, 59, 999))
+                            }
+                        }
+                    });
+
+                    data.value = todayCount ? todayCount.quantity : 0
+
+                    ws.send(JSON.stringify(data))
+                } else {
+                    ws.send(payloadStr)
+                }
+
             })
         });
     })

@@ -22,7 +22,8 @@ function register(data) {
 function login(data) {
     const schema = joi_1.default.object({
         email: joi_1.default.string().email().required(),
-        password: joi_1.default.string().min(6).required()
+        password: joi_1.default.string().min(6).required(),
+        remember: joi_1.default.boolean()
     });
     const { error } = schema.validate(data);
     if (error)

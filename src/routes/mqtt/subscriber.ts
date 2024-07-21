@@ -3,8 +3,10 @@ import path from 'path'
 import mqtt, { MqttClient } from 'mqtt'
 import mqttConfig from '../../config/mqtt'
 import { fire } from '../../utils/firebase'
-import { PhotoelectricType } from '../../types/sensor'
-import startWebsocketServer from '../websocket'
+import { serverTimestamp } from 'firebase/firestore'
+import { UltrasonicType } from '../../types/sensor'
+import db from '../../models'
+import { Op } from 'sequelize'
 
 const mqttOptions = {
     clientId: `mqtt_${Math.random().toString(16).slice(3)}`,
@@ -44,20 +46,42 @@ function startMqttSubscriber() {
         })
     })
 
-    mqttClient.on('message', (topic, payload) => {
-        const payloadStr = payload.toString()
-        console.log('Received Message:', topic, payloadStr)
+    mqttClient.on('message', async (topic, payload) => {
+        let data;
+        try {
+            const payloadStr = payload.toString()
+            // console.log('Received Message:', topic, payloadStr)
 
-        const data = JSON.parse(payloadStr)
+            data = JSON.parse(payloadStr)
+        } catch (error) {
+            console.error(error)
+        }
 
         // Save to database
-        if (data.tag_name === 'photoelectric') {
-            const photoelectricData: PhotoelectricType = {
-                status: data.value,
-                created_at: data.timestamp
+        if (data.tag_name === 'ultrasonic' && data.value) {
+            // Save record to firebase
+            const ultrasonicData: UltrasonicType = {
+                value: data.value,
+                created_at: serverTimestamp()
             }
+            fire.createDoc('ultrasonic', ultrasonicData)
 
-            fire.createDoc('photoelectric', photoelectricData)
+            // Save record to database
+            const todayCount = await db.Production.findOne({
+                where: {
+                    createdAt: {
+                        [Op.gte]: new Date(new Date().setHours(0, 0, 0, 0)),
+                        [Op.lt]: new Date(new Date().setHours(23, 59, 59, 999))
+                    }
+                }
+            });
+
+            if (todayCount) {
+                todayCount.quantity += 1;
+                await todayCount.save();
+            } else {
+                await db.Production.create({ product_id: 1, quantity: 1 });
+            }
         }
     })
 }

@@ -15,7 +15,7 @@ const authService: AuthService = {
 }
 
 async function login(data: LoginType) {
-    const { email, password } = data
+    const { email, password, remember } = data
 
     try {
         const user: UserType = await db.User.findOne({ 
@@ -38,13 +38,13 @@ async function login(data: LoginType) {
             name: user.name,
             role: user.user_role?.role_name
         }, authConfig.secret, {
-            expiresIn: '8h'
+            expiresIn: remember ? '7d' : '24h'
         })
 
         const userResponse = {
             name: user.name,
             email: user.email,
-            role: capitalizeFirstLetter(user.user_role?.role_name || '')
+            role: user.user_role?.role_name
         }
 
         return response.success('Login successful', { token, user: userResponse }, 201)
@@ -75,7 +75,7 @@ async function register(data: RegisterType) {
             name: data.name,
             email: data.email,
             password: data.password,
-            role_id: guestRole.dataValues.id,
+            role_id: data.roleRequest ? currentUserRole.dataValues.id : guestRole.dataValues.id,
             granted: false
         }
 

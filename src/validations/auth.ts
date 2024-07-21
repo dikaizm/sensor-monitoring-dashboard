@@ -19,7 +19,8 @@ function register(data: RegisterType) {
 function login(data: LoginType) {
     const schema = joi.object({
         email: joi.string().email().required(),
-        password: joi.string().min(6).required()
+        password: joi.string().min(6).required(),
+        remember: joi.boolean()
     })
 
     const { error } = schema.validate(data)

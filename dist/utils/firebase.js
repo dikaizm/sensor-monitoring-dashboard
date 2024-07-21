@@ -20,17 +20,29 @@ const app = (0, app_1.initializeApp)(database_1.firebaseConfig);
 const fireDb = (0, firestore_1.getFirestore)(app);
 exports.fireDb = fireDb;
 const fire = {
-    createDoc
+    createDoc,
+    getDocCount
 };
 exports.fire = fire;
 function createDoc(col, data) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const docRef = yield (0, firestore_1.addDoc)((0, firestore_1.collection)(fireDb, col), data);
-            // console.log('Document written with ID: ', docRef.id)
+            console.log('Document written with ID: ', docRef.id);
         }
         catch (error) {
             console.error('Error adding document: ', error);
         }
+    });
+}
+function getDocCount(col, field) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const today = new Date();
+        const startOfDay = firestore_1.Timestamp.fromDate(new Date(today.setHours(0, 0, 0, 0)));
+        const endOfDay = firestore_1.Timestamp.fromDate(new Date(today.setHours(23, 59, 59, 999)));
+        const q = (0, firestore_1.query)((0, firestore_1.collection)(fireDb, col), (0, firestore_1.where)(field, '==', true), (0, firestore_1.where)('created_at', '>=', startOfDay), (0, firestore_1.where)('created_at', '<=', endOfDay));
+        const querySnapshot = yield (0, firestore_1.getDocs)(q);
+        console.log('Document count with value true and created today: ', querySnapshot.size);
+        return querySnapshot.size;
     });
 }

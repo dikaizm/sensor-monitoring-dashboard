@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -9,6 +18,9 @@ const path_1 = __importDefault(require("path"));
 const mqtt_1 = __importDefault(require("mqtt"));
 const mqtt_2 = __importDefault(require("../../config/mqtt"));
 const firebase_1 = require("../../utils/firebase");
+const firestore_1 = require("firebase/firestore");
+const models_1 = __importDefault(require("../../models"));
+const sequelize_1 = require("sequelize");
 const mqttOptions = {
     clientId: `mqtt_${Math.random().toString(16).slice(3)}`,
     clean: true,
@@ -39,19 +51,42 @@ function startMqttSubscriber() {
             });
         });
     });
-    mqttClient.on('message', (topic, payload) => {
-        const payloadStr = payload.toString();
-        console.log('Received Message:', topic, payloadStr);
-        const data = JSON.parse(payloadStr);
-        // Save to database
-        if (data.tag_name === 'photoelectric') {
-            const photoelectricData = {
-                status: data.value,
-                created_at: data.timestamp
-            };
-            firebase_1.fire.createDoc('photoelectric', photoelectricData);
+    mqttClient.on('message', (topic, payload) => __awaiter(this, void 0, void 0, function* () {
+        let data;
+        try {
+            const payloadStr = payload.toString();
+            // console.log('Received Message:', topic, payloadStr)
+            data = JSON.parse(payloadStr);
         }
-    });
+        catch (error) {
+            console.error(error);
+        }
+        // Save to database
+        if (data.tag_name === 'ultrasonic' && data.value) {
+            // Save record to firebase
+            const ultrasonicData = {
+                value: data.value,
+                created_at: (0, firestore_1.serverTimestamp)()
+            };
+            firebase_1.fire.createDoc('ultrasonic', ultrasonicData);
+            // Save record to database
+            const todayCount = yield models_1.default.Production.findOne({
+                where: {
+                    createdAt: {
+                        [sequelize_1.Op.gte]: new Date(new Date().setHours(0, 0, 0, 0)),
+                        [sequelize_1.Op.lt]: new Date(new Date().setHours(23, 59, 59, 999))
+                    }
+                }
+            });
+            if (todayCount) {
+                todayCount.quantity += 1;
+                yield todayCount.save();
+            }
+            else {
+                yield models_1.default.Production.create({ product_id: 1, quantity: 1 });
+            }
+        }
+    }));
 }
 exports.startMqttSubscriber = startMqttSubscriber;
 function checkMqttConnection() {

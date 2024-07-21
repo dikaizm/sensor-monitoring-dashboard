@@ -15,12 +15,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const models_1 = __importDefault(require("../../models"));
 const authentication_1 = __importDefault(require("../../middleware/authentication"));
+const sensor_1 = __importDefault(require("../../config/sensor"));
 const router = (0, express_1.Router)();
 router.get('/toggle', authentication_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const conveyor = yield models_1.default.Sensor.findOne({ where: { name: 'conveyor' } });
         if (!conveyor) {
             return res.status(404).send({ success: false, error: 'Conveyor not found' });
+        }
+        try {
+            yield fetch(`${sensor_1.default.api}/move`);
+        }
+        catch (error) {
+            throw new Error('Failed to send command to sensor server');
         }
         // Toggle conveyor status
         const status = !conveyor.is_active;
