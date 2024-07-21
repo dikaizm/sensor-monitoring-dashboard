@@ -76,7 +76,7 @@ async function register(data: RegisterType) {
             email: data.email,
             password: data.password,
             role_id: data.roleRequest ? currentUserRole.dataValues.id : guestRole.dataValues.id,
-            granted: false
+            granted: true
         }
 
         const createUser = await userService.createUser(newUser)
