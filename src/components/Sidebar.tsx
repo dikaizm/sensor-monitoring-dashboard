@@ -9,11 +9,13 @@ export default function Sidebar() {
   const { isSidebarOpen } = useToggleSidebar()
 
   return (
-    <aside className={'fixed z-40 flex flex-col justify-between  min-h-screen p-3 transition-transform duration-200 pt-20 bg-white border-r ' + (isSidebarOpen ? 'w-[14rem]' : 'w-[4.5rem]')}>
+    <aside className={'fixed z-30 justify-between min-h-screen p-3 transition-transform duration-200 pt-20 bg-white border-r ' + (isSidebarOpen ? 'flex flex-col w-[14rem]' : 'sm:flex sm:flex-col hidden w-[4.5rem]')}>
       <section>
         <MenuItem link="/" icon={<GoHomeFill className='w-6 h-6' />}>Beranda</MenuItem>
         {/* <MenuItem link="/dashboard/line" icon={<BiSolidFactory className='w-6 h-6' />}>Lantai Produksi</MenuItem> */}
+
         <MenuItem link="/dashboard/line-3d" icon={<BiSolidFactory className='w-6 h-6' />}>Lantai Produksi 3D</MenuItem>
+
         <MenuItem link="/dashboard/result" icon={<RiDatabase2Fill className='w-6 h-6' />}>Hasil Produksi</MenuItem>
       </section>
 

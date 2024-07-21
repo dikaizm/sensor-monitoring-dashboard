@@ -18,7 +18,7 @@ export default function HomePage() {
   if (!isAuth) {
     return (
       <div className="relative flex flex-col justify-between min-h-screen mx-auto bg-slate-50">
-        <div className="relative flex justify-between gap-4 px-8 py-4">
+        <div className="relative justify-between gap-4 px-4 py-4 sm:px-8">
           <a href="/">
             <AppLogo />
           </a>
@@ -29,7 +29,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className="flex items-center justify-center h-full px-6">
+        <div className="flex items-center justify-center h-full px-4 sm:px-6">
           <HomeBanner />
         </div>
 

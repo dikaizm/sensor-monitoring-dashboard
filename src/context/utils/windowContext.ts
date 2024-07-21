@@ -3,7 +3,7 @@ import { Dispatch, createContext, useContext } from "react"
 interface WindowContextType {
     windowState: {
         [key: string]: boolean
-        photoelectric: boolean
+        ultrasonic: boolean
         camera: boolean
         conveyor: boolean
     }

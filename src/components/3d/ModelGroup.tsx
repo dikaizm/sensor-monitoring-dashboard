@@ -5,6 +5,7 @@ import ConveyorModel from './Conveyor';
 import CameraModel from './Camera';
 import UltrasonicModel from './Ultrasonic';
 import BoxModel from './Box';
+import { Model3DLabelText } from '../tooltip/Model3DLabel';
 
 const boxType = {
   PENYIMPANAN_BAHAN_BAKU: 'penyimpanan_bahan_baku',
@@ -50,13 +51,31 @@ export default function ModelGroup({ position = [0, 0, 0] }: ModelGroupType) {
         </group>
 
         <group position={[0, 0, 0]}>
-          <BoxModel keyId={boxType.PENYIMPANAN_BAHAN_BAKU} position={[-100, 0, -300]} scale={[80, 5, 80]} />
-          <BoxModel keyId={boxType.PENYIMPANAN_BAHAN_BAKU} position={[-100, 0, -205]} />
+          <BoxModel label='Penyimpanan Bahan Baku' keyId={boxType.PENYIMPANAN_BAHAN_BAKU} position={[-100, 0, -300]} scale={[80, 5, 80]} />
+          <BoxModel label='Proses Penggilingan' keyId={boxType.PENYIMPANAN_BAHAN_BAKU} position={[-100, 0, -205]} />
           <BoxModel keyId={boxType.PENYIMPANAN_BAHAN_BAKU} position={[-100, 0, 0]} scale={[100, 5, 300]} />
-          <BoxModel keyId={boxType.PENYIMPANAN_BAHAN_BAKU} position={[-90, 5, 0]} scale={[80, 5, 80]} color='lightgrey' />
-          <BoxModel keyId={boxType.PENYIMPANAN_BAHAN_BAKU} position={[-100, 0, 245]} scale={[100, 5, 180]} />
-          <BoxModel keyId={boxType.PENYIMPANAN_BAHAN_BAKU} position={[-90, 5, 195]} scale={[80, 5, 80]} color='lightgrey' />
-          <BoxModel keyId={boxType.PENYIMPANAN_BAHAN_BAKU} position={[-10, 0, 390]} scale={[280, 5, 100]} />
+          <Model3DLabelText
+            label='Rak Penyimpanan Pengeringan'
+            position={[-100, 20, 100]}
+            size={200}
+            keyId='label'
+          />
+          <BoxModel label='Proses Pencetakan' keyId={boxType.PENYIMPANAN_BAHAN_BAKU} position={[-90, 5, 0]} scale={[80, 5, 80]} color='lightgrey' />
+          <Model3DLabelText
+            label='Rak Penyimpanan Pengeringan'
+            position={[-100, 20, -100]}
+            size={200}
+            keyId='label'
+          />
+          <BoxModel label='Rak Penyimpanan Pengeringan' keyId={boxType.PENYIMPANAN_BAHAN_BAKU} position={[-100, 0, 245]} scale={[100, 5, 180]} />
+          <BoxModel label='Proses Pencetakan' keyId={boxType.PENYIMPANAN_BAHAN_BAKU} position={[-90, 5, 195]} scale={[80, 5, 80]} color='lightgrey' />
+          <BoxModel label='Proses Pencetakan' keyId={boxType.PENYIMPANAN_BAHAN_BAKU} position={[-10, 0, 390]} scale={[280, 5, 100]} />
+          <Model3DLabelText
+            label='Rak Penyimpanan Pengeringan'
+            position={[60, 20, 400]}
+            size={200}
+            keyId='label'
+          />
           <BoxModel keyId={boxType.PENYIMPANAN_BAHAN_BAKU} position={[-10, 5, 380]} scale={[80, 5, 80]} color='lightgrey' />
         </group>
 

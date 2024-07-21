@@ -47,7 +47,7 @@ export default function LoginPage() {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, remember }),
         // credentials: 'include'
       })
       const result = await response.json()
@@ -55,7 +55,7 @@ export default function LoginPage() {
         throw new Error(result.message)
       }
 
-      Cookies.set('auth', result.data.token, { expires: remember ? 7 : 1 })
+      Cookies.set('auth', result.data.token, { expires: remember ? 7 : 3 })
 
       localStorage.setItem('sidebar', 'true')
       localStorage.setItem('user', JSON.stringify(result.data.user))
@@ -84,18 +84,18 @@ export default function LoginPage() {
 
   return (
     <main className="relative flex flex-col justify-between min-h-screen mx-auto bg-slate-50">
-      <div className="relative flex justify-between gap-4 px-8 py-4">
+      <div className="relative flex flex-col justify-between gap-4 px-8 py-4 sm:flex-row">
         <a href="/">
           <AppLogo />
         </a>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 ">
           <span>Belum memiliki akun?</span>
           <a className="px-3 py-2 text-blue-500 border border-blue-500 rounded-lg" href="/register">Daftar Akun</a>
         </div>
       </div>
 
-      <div className="flex items-center justify-center h-full ">
+      <div className="flex items-center justify-center h-full">
         <div className="relative p-12 rounded-xl w-[32rem] h-fit bg-white border border-slate-100">
           <div className="text-center">
             <h1 className="text-2xl font-bold">Masuk ke Akun Anda</h1>

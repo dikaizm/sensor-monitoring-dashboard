@@ -6,6 +6,10 @@ body {
   background: white;
 }
 
+.no-scroll {
+  overflow: hidden;
+}
+
 /* Hide input border when typing */
 /* input {
   outline: none;

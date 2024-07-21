@@ -7,7 +7,7 @@ interface SensorType {
     [key: string]: SensorValueType
     conveyor_status: SensorValueType
     conveyor_speed: SensorValueType
-    photoelectric: SensorValueType
+    ultrasonic: SensorValueType
     camera: SensorValueType
 }
 
@@ -29,7 +29,7 @@ interface IconType {
 interface WindowOpenType {
     [key: string]: boolean;
     camera: boolean;
-    photoelectric: boolean;
+    ultrasonic: boolean;
     conveyor: boolean;
 }
 
@@ -37,4 +37,10 @@ interface StatusSvgType {
     idle: string;
     running: string;
     warning: string;
+}
+
+interface UserType {
+    email: string;
+    name: string;
+    role: string;
 }

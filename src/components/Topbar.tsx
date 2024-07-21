@@ -8,6 +8,12 @@ import { FaPerson } from 'react-icons/fa6'
 import { useNavigate } from 'react-router-dom'
 import Cookies from 'js-cookie'
 import { useToggleSidebar } from '../context/utils/sidebarContext'
+import { capitalizeFirstLetter } from '@/util/text'
+
+const truncateText = (text?: string, maxLength: number = 15) => {
+  if (!text) return '';
+  return text.length > maxLength ? text.substring(0, maxLength - 3) + '...' : text;
+};
 
 export default function Topbar() {
   const [isProfilOpen, setIsProfilOpen] = useState<boolean>(false)
@@ -17,7 +23,9 @@ export default function Topbar() {
   useEffect(() => {
     const user = localStorage.getItem('user')
     if (user) {
-      setUserInfo(JSON.parse(user))
+      const data = JSON.parse(user)
+      data.role = capitalizeFirstLetter(data.role)
+      setUserInfo(data)
     }
   }, [])
 
@@ -49,7 +57,7 @@ export default function Topbar() {
   }, [isProfilOpen]);
 
   return (
-    <header className='fixed z-50 flex items-center justify-between w-full h-16 gap-4 pl-4 pr-6 bg-white border-b'>
+    <header className='fixed z-40 flex items-center justify-between w-full h-16 gap-4 px-4 bg-white border-b sm:pl-4 sm:pr-6'>
       <section className='flex items-center gap-4'>
         <button onClick={handleMenuClick} type="button" className='w-10 h-10 p-2 rounded-full hover:bg-slate-200'>
           <MdMenu className='w-full h-full' />
@@ -60,7 +68,7 @@ export default function Topbar() {
 
       <section ref={profileRef} className='relative'>
         <button type="button" onClick={handleProfileClick} className={'flex items-center gap-2 p-2 border rounded-full  hover:bg-slate-200 ' + (isProfilOpen ? 'bg-slate-200' : 'border-slate-300')}>
-          <span className='text-sm font-semibold'>{userInfo?.name}</span>
+          <span className='text-sm font-semibold'>{truncateText(userInfo?.name)}</span>
           <BsPersonCircle className='w-6 h-6' />
         </button>
 
@@ -93,7 +101,7 @@ function ProfileDropdown({ isOpen, userInfo }: { isOpen: boolean, userInfo?: Use
       <div className='flex items-center gap-3 p-2'>
         <BsPersonCircle className='w-8 h-8' />
         <div>
-          <p className='text-sm font-semibold'>{userInfo?.name}</p>
+          <p className='text-sm font-semibold'>{truncateText(userInfo?.name, 25)}</p>
           <p className='text-xs text-slate-400'>{userInfo?.email}</p>
         </div>
       </div>

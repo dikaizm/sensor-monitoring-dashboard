@@ -1,52 +1,222 @@
 import AuthenticatedLayout from "../components/AuthenticatedLayout";
 import { BiExport } from "react-icons/bi";
 import PrimaryButton from "../components/PrimaryButton";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import appConfig from "@/config/env";
+import Cookies from "js-cookie";
+import { useSensorData } from "@/context/utils/sensorDataContext";
+import ModalEdit from "@/components/ModalEdit";
+import { reformatISODateTime } from "@/util/formatDate";
+import { saveAs } from 'file-saver';
+import ExcelJS from 'exceljs';
+import { useUser } from "@/context/utils/userContext";
+import { UserRole } from "@/types/constant";
+
+export type ProductionResultType = {
+  id: number;
+  name: string;
+  quantity: string;
+  createdAt: string;
+  updatedAt?: string;
+  product?: {
+    product_name: string
+  }
+}
 
 export default function ProductionResultPage() {
+  const { sensorData } = useSensorData()
+  const { user } = useUser()
+  const [productionResults, setProductionResults] = useState<ProductionResultType[]>([])
+
+  const [editProdModal, setEditProdModal] = useState<boolean>(false)
+  const [idModal, setIdModal] = useState<number>(0)
+
+  useEffect(() => {
+    if (editProdModal) {
+      document.body.classList.add('no-scroll');
+    } else {
+      document.body.classList.remove('no-scroll');
+    }
+    // Cleanup function to remove the class when the component unmounts
+    return () => document.body.classList.remove('no-scroll');
+  }, [editProdModal]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`${appConfig.apiUrl}/api/production/ultrasonic`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${Cookies.get('auth')}`
+          }
+        })
+        if (!response.ok) {
+          throw new Error('Failed to fetch production results')
+        }
+        const data = await response.json()
+
+        setProductionResults(data.data)
+
+      } catch (error) {
+        toast.error('Failed to fetch production results')
+      }
+    }
+
+    fetchData()
+  }, [editProdModal])
+
+  useEffect(() => {
+    // Update production results today data when sensor data changes
+    const today = new Date();
+    const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+
+    const todayData = productionResults.find(item => {
+      const itemDate = new Date(item.createdAt)
+      return itemDate >= startOfDay && itemDate <= endOfDay
+    })
+
+    if (todayData) {
+      const updatedResults = productionResults.map(item => {
+        if (item.id === todayData.id) {
+          item.quantity = sensorData.ultrasonic.value
+        }
+        return item
+      })
+
+      setProductionResults(updatedResults)
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sensorData.ultrasonic.value])
+
+  const handleExport = async () => {
+    const toastId = toast.loading('Exporting data...');
+
+    try {
+      const response = await fetch(`${appConfig.apiUrl}/api/production/ultrasonic`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${Cookies.get('auth')}`
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to export data');
+      }
+      const data = await response.json();
+
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('Hasil Produksi Genteng');
+
+      // Add header row
+      if (data.data.length > 0) {
+        worksheet.addRow(["No", "Nama", "Kuantitas", "Tanggal", "Tanggal Diperbarui"]);
+      }
+
+      const formattedData = data.data.map((item: ProductionResultType) => {
+        return {
+          id: item.id,
+          name: item.product?.product_name,
+          quantity: item.quantity,
+          createdAt: reformatISODateTime(item.createdAt),
+          updatedAt: reformatISODateTime(item.updatedAt),
+        };
+      })
+
+      // Add data rows
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      formattedData.forEach((item: any) => {
+        worksheet.addRow(Object.values(item));
+      });
+
+      // Generate buffer
+      const excelBuffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+      saveAs(blob, 'hasil-produksi-genteng.xlsx');
+
+      toast.dismiss(toastId);
+      toast.success('Data exported successfully');
+    } catch (error) {
+      console.error('Export error:', error); // For debugging
+      toast.dismiss(toastId);
+      toast.error('Failed to export data');
+    }
+  };
+
   return (
-    <AuthenticatedLayout>
+    <>
+      <AuthenticatedLayout>
 
-      <div className="p-6">
-        <div className="flex items-center justify-between gap-2">
-          <h1 className="text-2xl font-semibold">Hasil Produksi</h1>
+        <div className="p-4 sm:p-6">
+          <div className="flex items-center justify-between gap-2">
+            <h1 className="text-2xl font-semibold">Hasil Produksi</h1>
 
-          <PrimaryButton style="outline" icon={<BiExport className="w-4 h-4" />}>Export</PrimaryButton>
+            {(user?.role === UserRole.ADMIN || user?.role === UserRole.MARKETING) && (
+              <PrimaryButton style="outline" icon={<BiExport className="w-4 h-4" />} onClick={() => {
+                handleExport()
+              }}>Export Excel</PrimaryButton>
+            )}
+          </div>
+
+          <div className="relative mt-6 overflow-x-auto border rounded-lg">
+            <table className="w-full text-sm text-left text-gray-500 rtl:text-right">
+              <thead className="text-xs text-gray-700 uppercase bg-slate-100">
+                <tr>
+                  <th scope="col" className="px-6 py-3">
+                    No
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Nama
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Kuantitas
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Tanggal
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Tanggal Diperbarui
+                  </th>
+
+                  {(user?.role === UserRole.ADMIN) && (
+                    <th scope="col" className="px-6 py-3">
+                      <span className="sr-only">Edit</span>
+                    </th>
+                  )}
+                </tr>
+              </thead>
+              <tbody>
+                <TableRow data={productionResults} setState={{
+                  modal: setEditProdModal,
+                  id: setIdModal
+                }} />
+              </tbody>
+            </table>
+          </div>
         </div>
+      </AuthenticatedLayout>
 
-        <div className="relative mt-6 overflow-x-auto border sm:rounded-lg">
-          <table className="w-full text-sm text-left text-gray-500 rtl:text-right">
-            <thead className="text-xs text-gray-700 uppercase bg-slate-100">
-              <tr>
-                <th scope="col" className="px-6 py-3">
-                  ID
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Nama
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Kuantitas
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Tanggal
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  <span className="sr-only">Edit</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <TableRow data={productionResults} />
-            </tbody>
-          </table>
-        </div>
+      {editProdModal && (
+        <ModalEdit id={idModal} title="Edit Hasil Produksi" onClose={() => setEditProdModal(false)} />
+      )}
 
-      </div>
-
-    </AuthenticatedLayout>
+    </>
   )
 }
 
-function TableRow({ data }: { data: ProductionResultType[] }) {
+interface TableRowType {
+  data: ProductionResultType[]
+  setState: {
+    modal: (state: boolean) => void
+    id: (id: number) => void
+  }
+}
+
+function TableRow({ data, setState }: TableRowType) {
+  const { user } = useUser()
+
   return (
     <>
       {data.map((item, index) => {
@@ -56,48 +226,31 @@ function TableRow({ data }: { data: ProductionResultType[] }) {
               {item.id}
             </th>
             <td className="px-6 py-4">
-              {item.name}
+              {item.product?.product_name}
             </td>
             <td className="px-6 py-4">
               {item.quantity}
             </td>
             <td className="px-6 py-4">
-              {item.date}
+              {reformatISODateTime(item.createdAt)}
             </td>
-            <td className="px-6 py-4 text-right">
-              <a href="#" className="font-medium text-blue-600 hover:underline">Edit</a>
+            <td className="px-6 py-4">
+              {reformatISODateTime(item.updatedAt)}
             </td>
+
+            {(user?.role === UserRole.ADMIN) &&
+              (
+                <td className="px-6 py-4 text-right">
+                  <button type="button" className="font-medium text-blue-600 hover:underline" onClick={() => {
+                    setState.modal(true)
+                    setState.id(item.id)
+                  }}>Edit</button>
+                </td>
+              )}
+
           </tr>
         )
       })}
     </>
   )
 }
-
-type ProductionResultType = {
-  id: number;
-  name: string;
-  quantity: number;
-  date: string;
-}
-
-const productionResults: ProductionResultType[] = [
-  {
-    id: 1,
-    name: "Genteng",
-    quantity: 14,
-    date: "14/10/2023"
-  },
-  {
-    id: 2,
-    name: "Genteng",
-    quantity: 21,
-    date: "15/10/2023"
-  },
-  {
-    id: 3,
-    name: "Genteng",
-    quantity: 18,
-    date: "16/10/2023"
-  },
-]

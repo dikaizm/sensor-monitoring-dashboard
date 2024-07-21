@@ -2,6 +2,7 @@ import { createContext, useContext } from "react";
 
 type SensorContextType = {
     sensorData: SensorType;
+    setSensorData: React.Dispatch<React.SetStateAction<SensorType>>;
 }
 
 export const SensorContext = createContext<SensorContextType | undefined>(undefined);

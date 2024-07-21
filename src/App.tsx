@@ -6,26 +6,35 @@ import RegisterPage from './pages/RegisterPage'
 import { SensorContextProvider } from './context/SensorDataContext'
 import ProductionLine3DPage from './pages/ProductionLine3DPage'
 import { WindowContextProvider } from './context/WindowContext'
+import { UserProvider } from './context/UserContext'
 
 function App() {
   return (
     <main className='w-full min-h-screen bg-white'>
       <Router>
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={
+            <UserProvider>
+              <HomePage />
+            </UserProvider>
+          } />
           <Route path='/login' element={<LoginPage />} />
           <Route path='/register' element={<RegisterPage />} />
           <Route path='/dashboard/line-3d' element={
-            <WindowContextProvider>
-              <SensorContextProvider>
-                <ProductionLine3DPage />
-              </SensorContextProvider>
-            </WindowContextProvider>
+            <UserProvider>
+              <WindowContextProvider>
+                <SensorContextProvider>
+                  <ProductionLine3DPage />
+                </SensorContextProvider>
+              </WindowContextProvider>
+            </UserProvider>
           } />
           <Route path='/dashboard/result' element={
-            <SensorContextProvider>
-              <ProductionResultPage />
-            </SensorContextProvider>
+            <UserProvider>
+              <SensorContextProvider>
+                <ProductionResultPage />
+              </SensorContextProvider>
+            </UserProvider>
           } />
         </Routes>
       </Router>

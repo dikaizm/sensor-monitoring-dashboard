@@ -4,6 +4,8 @@ import appConfig from '../config/env';
 import Cookies from 'js-cookie'
 import { SensorContext } from './utils/sensorDataContext';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from './utils/userContext';
+import { UserRole } from '@/types/constant';
 
 interface MessageType {
   [key: string]: string
@@ -19,12 +21,13 @@ type SensorDataType = {
 
 export function SensorContextProvider({ children }: SensorDataType) {
   const navigate = useNavigate()
+  const { user } = useUser()
 
   const socketRef = useRef<WebSocket | null>(null);
   const [sensorData, setSensorData] = useState<SensorType>({
     conveyor_status: { value: '' },
     conveyor_speed: { value: '' },
-    photoelectric: { value: '' },
+    ultrasonic: { value: '' },
     camera: { value: '' },
   })
   const [session, setSession] = useState<string>('')
@@ -34,6 +37,37 @@ export function SensorContextProvider({ children }: SensorDataType) {
     if (authToken && authToken !== undefined) {
       setSession(authToken)
     }
+  }, [])
+
+  // Load ultrasonic data first and save it to the context
+  useEffect(() => {
+    const fetchUltrasonic = async () => {
+      try {
+        const response = await fetch(`${appConfig.apiUrl}/api/production/ultrasonic?filter=today`, {
+          method: 'GET',
+          headers: {
+            "Authorization": `Bearer ${Cookies.get('auth')}`
+          }
+        })
+        if (!response.ok) {
+          throw new Error('Failed to fetch ultrasonic data')
+        }
+
+        const data = await response.json()
+
+        setSensorData((prev: SensorType) => ({
+          ...prev,
+          ultrasonic: {
+            ...prev.ultrasonic,
+            value: data.data,
+          },
+        }));
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    fetchUltrasonic()
   }, [])
 
   useEffect(() => {
@@ -48,9 +82,13 @@ export function SensorContextProvider({ children }: SensorDataType) {
       socketRef.current.addEventListener('message', (event) => {
         const message: MessageType = JSON.parse(event.data);
 
-        if (message.message_type === 'alert') {
+        // console.log(message)
+
+        if (message.message_type === 'alert' && user?.role !== UserRole.MARKETING) {
           if (message.status === 'success') {
             toast.success(message.message);
+          } else {
+            toast.error(message.message);
           }
         }
 
@@ -76,7 +114,7 @@ export function SensorContextProvider({ children }: SensorDataType) {
   }, [session, sensorData, navigate])
 
   return (
-    <SensorContext.Provider value={{ sensorData }}>
+    <SensorContext.Provider value={{ sensorData, setSensorData }}>
       {children}
     </SensorContext.Provider>
   );

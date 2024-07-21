@@ -1,5 +1,12 @@
 export const InitialWindowOpen: WindowOpenType = {
     camera: false,
-    photoelectric: false,
-    conveyor: false
+    conveyor: false,
+    ultrasonic: false
+}
+
+export const UserRole = {
+    GUEST: 'guest',
+    ADMIN: 'admin',
+    OPERATOR: 'operator',
+    MARKETING: 'marketing'
 }
