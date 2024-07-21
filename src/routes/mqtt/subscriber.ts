@@ -29,28 +29,35 @@ const connectUrl = `${urlConfig.protocol}://${urlConfig.host}:${urlConfig.port}`
 
 const mqttClient: MqttClient = mqtt.connect(connectUrl, mqttOptions)
 
-const topic: string = mqttConfig.topic
+const topics: string[] = [mqttConfig.topic_1, mqttConfig.topic_2, mqttConfig.topic_3]
 
 function startMqttSubscriber() {
     mqttClient.on('connect', () => {
         console.log('[server]: mqtt connected');
 
-        mqttClient.subscribe([topic], () => {
-            console.log(`[server]: Subscribe to topic '${topic}'`)
+        mqttClient.subscribe(topics, (error) => {
+            if (error) {
+                console.error('[server]: Error subscribing to topics', error);
+            } else {
+                console.log(`[server]: Subscribed to topics '${topics.join(', ')}'`);
 
-            mqttClient.publish(topic, JSON.stringify({ 'message': 'Sensor mqtt test' }), { qos: 1, retain: true }, (error) => {
-                if (error) {
-                    console.error(error)
-                }
-            })
-        })
+                // Publish a message to each topic
+                topics.forEach(topic => {
+                    mqttClient.publish(topic, JSON.stringify({ 'message': 'Sensor mqtt test' }), { qos: 1, retain: true }, (error) => {
+                        if (error) {
+                            console.error(`[server]: Error publishing to topic '${topic}'`, error);
+                        }
+                    });
+                });
+            }
+        });
     })
 
     mqttClient.on('message', async (topic, payload) => {
         let data;
         try {
             const payloadStr = payload.toString()
-            // console.log('Received Message:', topic, payloadStr)
+            console.log('Received Message:', topic, payloadStr)
 
             data = JSON.parse(payloadStr)
         } catch (error) {
