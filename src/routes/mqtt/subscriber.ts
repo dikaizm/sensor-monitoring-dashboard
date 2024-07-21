@@ -58,7 +58,7 @@ function startMqttSubscriber() {
         }
 
         // Save to database
-        if (data.tag_name === 'ultrasonic' && data.value) {
+        if (data.tag_name === 'ultrasonic' && (data.value === true)) {
             // Save record to firebase
             const ultrasonicData: UltrasonicType = {
                 value: data.value,
