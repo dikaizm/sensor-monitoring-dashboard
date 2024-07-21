@@ -55,7 +55,7 @@ export default function ProductionLine3DPage() {
             />
             <PerspectiveCamera makeDefault fov={60} position={[0, 200, -300]} />
 
-            <axesHelper args={[150]} />
+            {/* <axesHelper args={[150]} /> */}
 
           </Canvas>
 
