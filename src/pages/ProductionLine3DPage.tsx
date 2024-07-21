@@ -105,7 +105,7 @@ function SensorWindows() {
     setConveyorCooldown(true)
     setTimeout(() => {
       setConveyorCooldown(false)
-    }, 3000)
+    }, 2000)
 
     const response = await fetch(`${appConfig.apiUrl}/api/sensor/conveyor/toggle`, {
       method: "GET",
