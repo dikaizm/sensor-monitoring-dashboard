@@ -88,6 +88,7 @@ function SensorWindows() {
   const { windowState, windowDispatch } = useToggleWindow()
   const [conveyorStatus, setConveyorStatus] = useState<boolean>(false)
   const [conveyorCooldown, setConveyorCooldown] = useState<boolean>(false)
+  const [cameraCondition, setCameraCondition] = useState<string>("-")
   const { user } = useUser()
 
   const { sensorData, setSensorData } = useSensorData()
@@ -130,6 +131,10 @@ function SensorWindows() {
     getConveyorStatus()
   }, [])
 
+  useEffect(() => {
+    setCameraCondition(sensorData.camera.value ? "Reject" : "OK")
+  }, [sensorData.camera.value])
+
   return (
     <>
       {
@@ -167,7 +172,7 @@ function SensorWindows() {
           }}>
             <div className="flex items-center justify-between">
               <p className="text-sm font-semibold text-slate-700">Condition</p>
-              <p className="text-sm font-semibold text-slate-700">{(sensorData.camera.value == 'true' ? "Reject" : "OK")}</p>
+              <p className="text-sm font-semibold text-slate-700">{cameraCondition}</p>
             </div>
           </ModalWindow>
         )

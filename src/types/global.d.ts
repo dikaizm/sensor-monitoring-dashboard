@@ -1,6 +1,6 @@
 interface SensorValueType {
-    [key: string]: string
-    value: string
+    [key: string]: string | number | boolean
+    value: string | number | boolean
 }
 
 interface SensorType {
