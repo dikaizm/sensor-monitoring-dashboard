@@ -84,7 +84,7 @@ function register(data) {
                 email: data.email,
                 password: data.password,
                 role_id: data.roleRequest ? currentUserRole.dataValues.id : guestRole.dataValues.id,
-                granted: false
+                granted: true
             };
             const createUser = yield userService_1.default.createUser(newUser);
             // save user register request

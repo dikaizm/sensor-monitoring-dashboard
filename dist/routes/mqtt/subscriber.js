@@ -38,31 +38,39 @@ const urlConfig = {
 const connectUrl = `${urlConfig.protocol}://${urlConfig.host}:${urlConfig.port}`;
 const mqttClient = mqtt_1.default.connect(connectUrl, mqttOptions);
 exports.mqttClient = mqttClient;
-const topic = mqtt_2.default.topic;
+const topics = [mqtt_2.default.topic_1, mqtt_2.default.topic_2, mqtt_2.default.topic_3];
 function startMqttSubscriber() {
     mqttClient.on('connect', () => {
         console.log('[server]: mqtt connected');
-        mqttClient.subscribe([topic], () => {
-            console.log(`[server]: Subscribe to topic '${topic}'`);
-            mqttClient.publish(topic, JSON.stringify({ 'message': 'Sensor mqtt test' }), { qos: 1, retain: true }, (error) => {
-                if (error) {
-                    console.error(error);
-                }
-            });
+        mqttClient.subscribe(topics, (error) => {
+            if (error) {
+                console.error('[server]: Error subscribing to topics', error);
+            }
+            else {
+                console.log(`[server]: Subscribed to topics '${topics.join(', ')}'`);
+                // Publish a message to each topic
+                topics.forEach(topic => {
+                    mqttClient.publish(topic, JSON.stringify({ 'message': 'Sensor mqtt test' }), { qos: 1, retain: true }, (error) => {
+                        if (error) {
+                            console.error(`[server]: Error publishing to topic '${topic}'`, error);
+                        }
+                    });
+                });
+            }
         });
     });
     mqttClient.on('message', (topic, payload) => __awaiter(this, void 0, void 0, function* () {
         let data;
         try {
             const payloadStr = payload.toString();
-            // console.log('Received Message:', topic, payloadStr)
+            console.log('Received Message:', topic, payloadStr);
             data = JSON.parse(payloadStr);
         }
         catch (error) {
             console.error(error);
         }
         // Save to database
-        if (data.tag_name === 'ultrasonic' && data.value) {
+        if (data.tag_name === 'ultrasonic' && (data.value === true)) {
             // Save record to firebase
             const ultrasonicData = {
                 value: data.value,

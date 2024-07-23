@@ -46,8 +46,25 @@ router.get('/refresh', (req, res) => __awaiter(void 0, void 0, void 0, function*
 }));
 router.get('/ultrasonic', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // Get query params from request filter=today
-    const { filter } = req.query;
-    if (filter === 'today') {
+    const { filter, filterMonth, filterYear } = req.query;
+    if (filterMonth && filterYear) {
+        try {
+            const ultrasonicData = yield models_1.default.Production.findAll({
+                where: {
+                    createdAt: {
+                        [sequelize_1.Op.gte]: new Date(`${filterYear}-${filterMonth}-01`),
+                        [sequelize_1.Op.lt]: new Date(`${filterYear}-${filterMonth}-31`)
+                    }
+                }
+            });
+            res.status(200).json({ success: true, message: "Production data fetched", data: ultrasonicData });
+        }
+        catch (error) {
+            console.error(error);
+            res.status(500).json({ success: false, message: "Failed to fetch production data" });
+        }
+    }
+    else if (filter === 'today') {
         try {
             const ultrasonicData = yield models_1.default.Production.findOne({
                 where: {
@@ -92,7 +109,7 @@ router.get('/ultrasonic/:id', (req, res) => __awaiter(void 0, void 0, void 0, fu
 }));
 router.put('/ultrasonic/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // Check role
-    if (req.body.user.role !== 'admin') {
+    if (req.body.user.role === 'operator') {
         return res.status(403).json({ success: false, message: 'Unauthorized' });
     }
     const { id } = req.params;

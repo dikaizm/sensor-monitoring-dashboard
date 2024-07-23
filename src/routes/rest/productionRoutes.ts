@@ -36,9 +36,24 @@ router.get('/refresh', async (req, res) => {
 
 router.get('/ultrasonic', async (req, res) => {
     // Get query params from request filter=today
-    const { filter } = req.query
+    const { filter, filterMonth, filterYear } = req.query
 
-    if (filter === 'today') {
+    if (filterMonth && filterYear) {
+        try {
+            const ultrasonicData = await db.Production.findAll({
+                where: {
+                    createdAt: {
+                        [Op.gte]: new Date(`${filterYear}-${filterMonth}-01`),
+                        [Op.lt]: new Date(`${filterYear}-${filterMonth}-31`)
+                    }
+                }
+            })
+            res.status(200).json({ success: true, message: "Production data fetched", data: ultrasonicData })
+        } catch (error) {
+            console.error(error)
+            res.status(500).json({ success: false, message: "Failed to fetch production data" })
+        }
+    } else if (filter === 'today') {
         try {
             const ultrasonicData = await db.Production.findOne({
                 where: {
