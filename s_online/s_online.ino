@@ -50,11 +50,11 @@ void setup() {
 void loop() {
   server.handleClient();
 
-  unsigned long currentMillis = millis();
-  if (currentMillis - previousMillis >= interval) {
-    previousMillis = currentMillis;
-    checkStatusFromServer();
-  }
+  // unsigned long currentMillis = millis();
+  // if (currentMillis - previousMillis >= interval) {
+  //   previousMillis = currentMillis;
+  //   checkStatusFromServer();
+  // }
 }
 
 void handleRoot() {
