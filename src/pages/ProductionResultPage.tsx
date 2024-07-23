@@ -12,6 +12,8 @@ import { saveAs } from 'file-saver';
 import ExcelJS from 'exceljs';
 import { useUser } from "@/context/utils/userContext";
 import { UserRole } from "@/types/constant";
+import { FaChartColumn } from "react-icons/fa6";
+import ModalChart from "@/components/ModalChart";
 
 const isToday = (date: string) => {
   const today = new Date();
@@ -26,7 +28,7 @@ const isToday = (date: string) => {
 export type ProductionResultType = {
   id: number;
   name: string;
-  quantity: string;
+  quantity: string | number;
   createdAt: string;
   updatedAt?: string;
   product?: {
@@ -43,13 +45,15 @@ export default function ProductionResultPage() {
   const [editProdModal, setEditProdModal] = useState<boolean>(false)
   const [idModal, setIdModal] = useState<number>(0)
 
+  const [chartModal, setChartModal] = useState<boolean>(false)
+
   useEffect(() => {
     const filteredResults = productionResults.filter(item => !isToday(item.createdAt));
     const total = filteredResults.reduce((acc, item) => {
-      return acc + parseInt(item.quantity, 10);
+      return acc + (item.quantity as number);
     }, 0);
 
-    setTotalQty(total + parseInt(sensorData.ultrasonic.value, 10));
+    setTotalQty(total + (sensorData.ultrasonic.value as number));
   }, [sensorData.ultrasonic.value, productionResults, editProdModal]);
 
   useEffect(() => {
@@ -100,7 +104,7 @@ export default function ProductionResultPage() {
     if (todayData) {
       const updatedResults = productionResults.map(item => {
         if (item.id === todayData.id) {
-          item.quantity = sensorData.ultrasonic.value
+          item.quantity = sensorData.ultrasonic.value as number
         }
         return item
       })
@@ -165,6 +169,10 @@ export default function ProductionResultPage() {
     }
   };
 
+  const handleChartBtn = () => {
+    setChartModal(true)
+  }
+
   return (
     <>
       <AuthenticatedLayout>
@@ -219,7 +227,12 @@ export default function ProductionResultPage() {
           <div className="w-full mt-4 bg-white border rounded">
             <div className="flex items-center justify-between p-4 font-semibold">
               <h4>Total Produksi</h4>
-              <p className="px-3 py-1 text-white bg-green-600 rounded-full">{totalQty}</p>
+              <div className="flex items-center gap-2">
+                <button type="button" className="p-2 text-white bg-blue-500 rounded-full hover:bg-blue-600" onClick={handleChartBtn}>
+                  <FaChartColumn className="w-5 h-5" />
+                </button>
+                <p className="px-3 py-1 text-white bg-green-600 rounded-full">{totalQty}</p>
+              </div>
             </div>
           </div>
         </div>
@@ -227,6 +240,10 @@ export default function ProductionResultPage() {
 
       {editProdModal && (
         <ModalEdit id={idModal} title="Edit Hasil Produksi" onClose={() => setEditProdModal(false)} />
+      )}
+
+      {chartModal && (
+        <ModalChart onClose={() => setChartModal(false)} />
       )}
 
     </>
