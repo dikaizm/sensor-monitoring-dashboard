@@ -139,9 +139,9 @@ export default function ProductionResultPage() {
         worksheet.addRow(["No", "Nama", "Kuantitas", "Tanggal", "Tanggal Diperbarui"]);
       }
 
-      const formattedData = data.data.map((item: ProductionResultType) => {
+      const formattedData = data.data.map((item: ProductionResultType, index: number) => {
         return {
-          id: item.id,
+          id: index + 1,
           name: item.product?.product_name,
           quantity: item.quantity,
           createdAt: reformatISODateTime(item.createdAt),
@@ -267,7 +267,7 @@ function TableRow({ data, setState }: TableRowType) {
         return (
           <tr key={index} className="bg-white border-b hover:bg-gray-50 ">
             <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap ">
-              {item.id}
+              {index + 1}
             </th>
             <td className="px-6 py-4">
               {item.product?.product_name}
