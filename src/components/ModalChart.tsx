@@ -6,6 +6,7 @@ import {
   LinearScale,
   BarElement,
   Tooltip,
+  Legend,
 } from 'chart.js'
 import Cookies from 'js-cookie';
 import { ChangeEvent, useEffect, useState } from 'react';
@@ -13,87 +14,113 @@ import { Bar } from "react-chartjs-2";
 import toast from 'react-hot-toast';
 import { MdClose } from "react-icons/md";
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
 export default function ModalChart({ onClose }: { onClose: () => void }) {
   const { sensorData } = useSensorData()
 
   const [year, setYear] = useState<number>(getCurrentYear());
   const [month, setMonth] = useState<number>(getCurrentMonth());
-  const [data, setData] = useState<number[]>([]);
+  const [prodData, setProdData] = useState<number[]>([]);
+  const [salesData, setSalesData] = useState<number[]>([]);
   const [totalQty, setTotalQty] = useState<number>(0);
 
   const chartOptions = {
     responsive: true,
+    legend: {
+      display: true,
+      position: 'bottom',
+    }
   }
 
   const chartData = {
     labels: generateDates(year, month),
     datasets: [
       {
-        data: data,
+        label: 'Produksi',
+        data: prodData,
         backgroundColor: 'rgba(53, 162, 235, 0.7)',
       },
+      {
+        label: 'Penjualan',
+        data: salesData,
+        backgroundColor: 'rgba(255, 99, 132, 0.7)',
+      }
     ]
   }
 
   useEffect(() => {
     if (month === getCurrentMonth() && year === getCurrentYear()) {
       const todayDate = new Date().getDate()
-      const filteredResults = data.filter((_, idx) => idx !== todayDate - 1)
-      const total = filteredResults.reduce((acc, item) => acc + item, 0)
-      setTotalQty(total + (sensorData.ultrasonic.value as number))
+      const filteredResults = prodData.filter((_, idx) => idx !== todayDate - 1)
+      const totalProd = filteredResults.reduce((acc, item) => acc + item, 0)
+
+      const totalSales = salesData.reduce((acc, item) => acc + item, 0)
+
+      setTotalQty((totalProd + (sensorData.ultrasonic.value as number)) - totalSales)
     }
-  }, [data, sensorData.ultrasonic.value, year, month])
+  }, [prodData, salesData, sensorData.ultrasonic.value, year, month])
 
   useEffect(() => {
     if (month === getCurrentMonth() && year === getCurrentYear()) {
       const todayDate = new Date().getDate();
-      const updatedData = [...data];
+      const updatedData = [...prodData];
 
       updatedData[todayDate - 1] = sensorData.ultrasonic.value as number;
 
       // Update the state
-      setData(updatedData);
+      setProdData(updatedData);
     }
   }, [sensorData.ultrasonic.value, year, month]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`${appConfig.apiUrl}/api/production/ultrasonic?filterMonth=${month}&filterYear=${year}`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${Cookies.get('auth')}`
-          }
-        })
-        if (!response.ok) {
-          throw new Error('Failed to fetch production results')
+        const [productionResponse, salesResponse] = await Promise.all([
+          fetch(`${appConfig.apiUrl}/api/production/ultrasonic?filterMonth=${month}&filterYear=${year}`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${Cookies.get('auth')}` }
+          }),
+          fetch(`${appConfig.apiUrl}/api/sales?filterMonth=${month}&filterYear=${year}`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${Cookies.get('auth')}` }
+          })
+        ]);
+
+        if (!productionResponse.ok || !salesResponse.ok) {
+          throw new Error('Failed to fetch data');
         }
 
-        const data = await response.json()
-        // Fill data with 0 if on certain date there is no production
-        const dates = generateDates(year, month)
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const productionData = data.data.map((item: any) => item.createdAt)
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const productionQty = data.data.map((item: any) => item.quantity)
-        const filledData = dates.map(date => {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const idx = productionData.findIndex((item: any) => new Date(item).getDate() === date)
-          return idx !== -1 ? productionQty[idx] : 0
-        })
+        const [productionData, salesData] = await Promise.all([
+          productionResponse.json(),
+          salesResponse.json()
+        ]);
 
-        setData(filledData)
-        setTotalQty(productionQty.reduce((acc: number, curr: number) => acc + curr, 0))
+        const dates = generateDates(year, month);
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const processData = (data: any[], dateField: string) => {
+          const dataMap = new Map(data.map(item => [new Date(item[dateField]).getDate(), item.quantity]));
+          return dates.map(date => dataMap.get(date) || 0);
+        };
+
+        const filledProductionData = processData(productionData.data, 'createdAt');
+        const filledSalesData = processData(salesData.data, 'date');
+
+        const productionTotal = filledProductionData.reduce((acc, curr) => acc + curr, 0);
+        const salesTotal = filledSalesData.reduce((acc, curr) => acc + curr, 0);
+
+        setProdData(filledProductionData);
+        setSalesData(filledSalesData);
+        setTotalQty(productionTotal - salesTotal);
 
       } catch (error) {
-        toast.error('Failed to fetch production results')
+        toast.error('Failed to fetch data');
       }
-    }
+    };
 
     fetchData();
-  }, [year, month])
+  }, [year, month]);
 
   return (
     <div id="modal_chart">
@@ -101,7 +128,7 @@ export default function ModalChart({ onClose }: { onClose: () => void }) {
 
       <div className="fixed z-50 w-[90%] -translate-x-1/2 -translate-y-1/2 bg-white border rounded-lg left-1/2 sm:w-[36rem] top-1/2 drop-shadow-xl">
         <div className="flex items-start justify-between gap-2 py-2 pl-4 pr-2">
-          <h4 className="font-semibold">Grafik Total Produksi</h4>
+          <h4 className="font-semibold">Grafik Produksi dan Penjualan</h4>
           <button onClick={onClose} type="button" className="p-1 rounded-full bg-slate-100 hover:bg-slate-200"><MdClose className="w-5 h-5" /></button>
         </div>
 
@@ -127,7 +154,7 @@ export default function ModalChart({ onClose }: { onClose: () => void }) {
 function MonthlyTotal({ totalQty }: { totalQty: number }) {
   return (
     <div>
-      <h4 className="text-sm font-medium text-gray-500">Total Produksi</h4>
+      <h4 className="text-sm font-medium text-gray-500">Inventory</h4>
       <p className="font-bold text-blue-500">{totalQty}</p>
     </div>
   )
