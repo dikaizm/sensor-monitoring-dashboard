@@ -2,6 +2,7 @@ import { Router } from "express";
 import { fire } from "../../utils/firebase";
 import db from "../../models";
 import { Op } from "sequelize";
+import response, { ApiResponse } from "../../utils/response";
 
 const router = Router()
 
@@ -77,8 +78,15 @@ router.get('/ultrasonic', async (req, res) => {
                     attributes: ['product_name']
                 }
             })
+
+            // Insert product name into name field
+            ultrasonicData.forEach((data: any) => {
+                data.dataValues.name = data.product.product_name
+            })
+
             res.status(200).json({ success: true, message: "Production data fetched", data: ultrasonicData })
         } catch (error) {
+            console.log(error)
             res.status(500).json({ success: false, message: "Failed to fetch production data" })
         }
     }
@@ -112,6 +120,46 @@ router.put('/ultrasonic/:id', async (req, res) => {
     } catch (error) {
         res.status(500).json({ success: false, message: "Failed to update ultrasonic data" })
     }
+})
+
+router.get('/export', async (req, res) => {
+    // Check role
+    // if (req.body.user.role != 'admin' || req.body.user.role != 'marketing') {
+    //     return res.status(403).json({ success: false, message: 'Unauthorized' })
+    // }
+
+    let result: ApiResponse;
+    try {
+        const productionData = await db.Production.findAll({
+            order: [['createdAt', 'DESC']],
+            include: {
+                model: db.Product,
+                attributes: ['product_name']
+            }
+        })
+        const salesData = await db.Sales.findAll({
+            order: [['createdAt', 'DESC']],
+            include: {
+                model: db.Product,
+                attributes: ['product_name']
+            }
+        })
+
+        // Insert product name into name field
+        productionData.forEach((data: any) => {
+            data.dataValues.name = data.product.product_name
+        })
+        salesData.forEach((data: any) => {
+            data.dataValues.name = data.product.product_name
+        })
+
+        console.log(productionData)
+
+        result = response.success('Success fetch export data', { production: productionData, sales: salesData })
+    } catch (error) {
+        result = response.error('Failed to fetch export data', null, 500)
+    }
+    result.send(res)
 })
 
 export default router
