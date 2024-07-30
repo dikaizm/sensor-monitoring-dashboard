@@ -124,9 +124,9 @@ router.put('/ultrasonic/:id', async (req, res) => {
 
 router.get('/export', async (req, res) => {
     // Check role
-    // if (req.body.user.role != 'admin' || req.body.user.role != 'marketing') {
-    //     return res.status(403).json({ success: false, message: 'Unauthorized' })
-    // }
+    if (req.body.user.role === 'operator') {
+        return res.status(403).json({ success: false, message: 'Unauthorized' })
+    }
 
     let result: ApiResponse;
     try {
